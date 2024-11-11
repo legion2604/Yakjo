@@ -18,4 +18,7 @@ class RegisterActivity : AppCompatActivity() {
         }
 
     }
+    fun mahnoz(){
+        println("mahnoz")
+    }
 }
