@@ -17,4 +17,7 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+    fun mahnoz(){
+        println("mahnoz")
+    }
 }
