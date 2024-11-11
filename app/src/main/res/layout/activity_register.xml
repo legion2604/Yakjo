@@ -40,13 +40,27 @@
           android:text="@string/voyti"
           android:textSize="26sp"
           android:textColor="@color/white"/>
+      <LinearLayout
+          android:layout_width="210dp"
+          android:layout_height="50dp"
+          android:layout_marginTop="6dp"
+          android:background="@drawable/for_edit_text">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="+992"
+            android:textColor="@color/white"
+            android:textSize="20dp"/>
         <EditText
             android:layout_width="210dp"
             android:layout_height="50dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/for_edit_text"
-            android:hint="@string/phonenumber"
-            />
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/white"
+            android:inputType="phone"
+            android:maxLength="9"
+            android:hint="@string/phonenumber"/>
+      </LinearLayout>
       <Button
           android:id="@+id/betSMSbutton"
           android:layout_width="210dp"

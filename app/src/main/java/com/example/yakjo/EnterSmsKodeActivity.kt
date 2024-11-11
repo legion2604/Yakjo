@@ -1,8 +1,10 @@
 package com.example.yakjo
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,15 +14,16 @@ import androidx.core.view.WindowInsetsCompat
 class EnterSmsKodeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_enter_sms_kode)
         val code1 = findViewById<EditText>(R.id.code1)
+        code1.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(code1, InputMethodManager.SHOW_IMPLICIT)
         val code2 = findViewById<EditText>(R.id.code2)
         val code3 = findViewById<EditText>(R.id.code3)
         val code4 = findViewById<EditText>(R.id.code4)
         val code5 = findViewById<EditText>(R.id.code5)
         val code6 = findViewById<EditText>(R.id.code6)
-
         val codeInputs = listOf(code1, code2, code3, code4,code5,code6)
         setupCodeInput(codeInputs)
     }

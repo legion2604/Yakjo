@@ -3,6 +3,6 @@
     <string name="voyti">Войти</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="phonenumber">+992 ___ - __ - __ - __</string>
+    <string name="phonenumber">___ - __ - __ - __</string>
     <string name="sms">Получит код по SMS</string>
 </resources>
