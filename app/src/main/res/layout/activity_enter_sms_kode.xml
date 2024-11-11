@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EnterSmsKodeActivity">
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="160dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/back"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-25dp" />
+
+    <LinearLayout
+        android:layout_width="250dp"
+        android:layout_height="220dp"
+        android:background="@drawable/rounded_button_background"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Введите код"
+            android:textSize="26sp"
+            android:textColor="@color/white"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Мы отправели SMS с кодом проверки на ваш телефон +992 999-99-99-99"
+            android:gravity="center"
+            android:textSize="10sp"
+            android:textColor="@color/white"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+            <EditText
+                android:id="@+id/code1"
+                android:layout_width="24dp"
+                android:layout_height="27dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edittext" />
+            <EditText
+                android:id="@+id/code2"
+                android:layout_width="24dp"
+                android:layout_height="27dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edittext" />
+            <EditText
+                android:id="@+id/code3"
+                android:layout_width="24dp"
+                android:layout_height="27dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edittext" />
+            <EditText
+                android:id="@+id/code4"
+                android:layout_width="24dp"
+                android:layout_height="27dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edittext" />
+            <EditText
+                android:id="@+id/code5"
+                android:layout_width="24dp"
+                android:layout_height="27dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edittext" />
+            <EditText
+                android:id="@+id/code6"
+                android:layout_width="24dp"
+                android:layout_height="27dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edittext" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Моя кнопка"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#59903D"/>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
