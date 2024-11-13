@@ -7,12 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity">
-  <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:tools="http://schemas.android.com/tools"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      tools:context=".EnterPhoneNumberFragment">
+
 
     <ImageView
         android:id="@+id/imageView"
@@ -44,7 +39,8 @@
           android:layout_width="210dp"
           android:layout_height="50dp"
           android:layout_marginTop="6dp"
-          android:background="@drawable/for_edit_text">
+          android:background="@drawable/for_edit_text"
+          >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,16 +49,17 @@
             android:textColor="@color/white"
             android:textSize="20dp"/>
         <EditText
+            android:id="@+id/numberPhone"
             android:layout_width="210dp"
             android:layout_height="50dp"
             android:layout_marginLeft="5dp"
             android:textColor="@color/white"
-            android:inputType="phone"
+            android:inputType="number"
             android:maxLength="9"
             android:hint="@string/phonenumber"/>
       </LinearLayout>
       <Button
-          android:id="@+id/betSMSbutton"
+          android:id="@+id/getSMSbutton"
           android:layout_width="210dp"
           android:layout_height="50dp"
           android:layout_marginTop="15dp"
@@ -70,5 +67,4 @@
           android:backgroundTint="#59903D"/>
     </LinearLayout>
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>

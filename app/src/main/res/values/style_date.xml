@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:colorAccent">#FF5722</item>  <!-- Оранжевый цвет акцента -->
+        <item name="android:textColorPrimary">#000000</item>  <!-- Черный цвет текста -->
+    </style>
+
+</resources>
