@@ -4,6 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".MainMenu">
 
     <ImageView
@@ -12,17 +13,15 @@
         android:layout_height="match_parent"
         android:paddingStart="160dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/back"
+        android:src="@drawable/p_back"
         tools:ignore="RtlSymmetry"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-25dp" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/mainmenu"
+
+        android:background="@drawable/s_mainmenu"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -35,17 +34,19 @@
             android:textSize="50sp" />
 
         <RelativeLayout
-            android:layout_width="270dp"
+            android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/linearlayout_1">
+
+            android:gravity="center"
+            android:background="@drawable/s_linearlayout_1">
 
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="26dp"
                 android:layout_marginTop="50dp"
-                android:src="@drawable/linia" />
+                android:src="@drawable/p_linia" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -58,7 +59,7 @@
                     android:layout_width="20dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:src="@drawable/krug" />
+                    android:src="@drawable/p_krug" />
 
                 <EditText
                     android:layout_width="200dp"
@@ -83,7 +84,7 @@
                     android:layout_width="20dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:src="@drawable/krug" />
+                    android:src="@drawable/p_krug" />
 
                 <EditText
                     android:layout_width="200dp"
@@ -107,7 +108,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginTop="6dp"
-                    android:src="@drawable/celendar" />
+                    android:src="@drawable/p_celendar" />
 
                 <EditText
                     android:id="@+id/editTextDate"
@@ -133,7 +134,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginTop="10dp"
-                    android:src="@drawable/user" />
+                    android:src="@drawable/p_user" />
 
                 <EditText
                     android:id="@+id/countUser"
@@ -168,6 +169,15 @@
                 android:backgroundTint="#59903D"/>
 
         </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/s_linearlayout_1"
+            />
+
     </LinearLayout>
 
 

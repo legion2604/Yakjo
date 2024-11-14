@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity">
+    tools:context=".LogIn">
 
 
     <ImageView
@@ -15,14 +15,14 @@
         android:layout_height="match_parent"
         android:paddingLeft="160dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/back"
+        android:src="@drawable/p_back"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-25dp" />
 
     <LinearLayout
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:background="@drawable/rounded_button_background"
+        android:background="@drawable/s_rounded_button_background"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
           android:layout_width="210dp"
           android:layout_height="50dp"
           android:layout_marginTop="6dp"
-          android:background="@drawable/for_edit_text"
+          android:background="@drawable/s_for_edit_text"
           >
         <TextView
             android:layout_width="wrap_content"

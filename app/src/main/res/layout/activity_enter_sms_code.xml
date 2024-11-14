@@ -15,14 +15,14 @@
         android:layout_height="match_parent"
         android:paddingLeft="160dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/back"
+        android:src="@drawable/p_back"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="-25dp" />
 
     <LinearLayout
         android:layout_width="250dp"
         android:layout_height="220dp"
-        android:background="@drawable/rounded_button_background"
+        android:background="@drawable/s_rounded_button_background"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,8 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text=""
             android:gravity="center"
+            android:text="Мы отправели SMS код для подтвержение на ваш номер"
             android:textSize="10sp"
             android:textColor="@color/white"/>
 
@@ -60,7 +60,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_marginHorizontal="6dp"
-                android:background="@drawable/rounded_edittext" />
+                android:background="@drawable/s_rounded_edittext" />
             <EditText
                 android:id="@+id/code2"
                 android:layout_width="24dp"
@@ -70,7 +70,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_marginHorizontal="6dp"
-                android:background="@drawable/rounded_edittext" />
+                android:background="@drawable/s_rounded_edittext" />
             <EditText
                 android:id="@+id/code3"
                 android:layout_width="24dp"
@@ -80,7 +80,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_marginHorizontal="6dp"
-                android:background="@drawable/rounded_edittext" />
+                android:background="@drawable/s_rounded_edittext" />
             <EditText
                 android:id="@+id/code4"
                 android:layout_width="24dp"
@@ -90,7 +90,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_marginHorizontal="6dp"
-                android:background="@drawable/rounded_edittext" />
+                android:background="@drawable/s_rounded_edittext" />
             <EditText
                 android:id="@+id/code5"
                 android:layout_width="24dp"
@@ -100,7 +100,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_marginHorizontal="6dp"
-                android:background="@drawable/rounded_edittext" />
+                android:background="@drawable/s_rounded_edittext" />
             <EditText
                 android:id="@+id/code6"
                 android:layout_width="24dp"
@@ -110,7 +110,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:layout_marginHorizontal="6dp"
-                android:background="@drawable/rounded_edittext" />
+                android:background="@drawable/s_rounded_edittext" />
 
         </LinearLayout>
 

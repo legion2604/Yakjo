@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="10dp">
+
+    <LinearLayout
+        android:layout_width="330dp"
+        android:layout_height="190dp"
+        android:background="@drawable/s_linearlayout_1"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="150TJS"
+                android:textColor="#333"
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="170dp"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="53dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="17dp"
+                android:src="@drawable/p_linia" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/timeA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="#333"
+                    android:textSize="10sp"
+                    android:text="12:30"/>
+                <ImageView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_marginStart="13dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/p_krug2" />
+
+                <TextView
+                    android:id="@+id/cityA"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="4dp"
+                    android:text="City 1"
+                    android:textColor="#333"
+                    android:textSize="14dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="50dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/timeB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textSize="10sp"
+                    android:textColor="#333"
+                    android:text="12:30"/>
+                <ImageView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_marginStart="13dp"
+                    android:layout_marginTop="16dp"
+                    android:src="@drawable/p_krug2" />
+
+                <TextView
+                    android:id="@+id/cityB"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="11dp"
+                    android:text="City 2"
+                    android:layout_marginStart="4dp"
+                    android:textColor="#333"
+                    android:textSize="14dp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="15dp"
+                android:src="@drawable/p_car_icon"/>
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/p_user_icon"/>
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:text="UserName"/>
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:text="Подробнее"
+                android:textSize="10dp"
+                android:gravity="center"
+                android:layout_marginStart="32dp"
+                android:backgroundTint="#59903D"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

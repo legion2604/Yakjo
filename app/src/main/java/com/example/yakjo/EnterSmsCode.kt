@@ -1,14 +1,11 @@
 package com.example.yakjo
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -19,7 +16,7 @@ class EnterSmsCode : AppCompatActivity() {
         setupCodeInput()
         goToNextActivityIfCodeIsNotEmpty()
         val numberPhone = intent.getStringExtra("numberPhone")
-        val text=findViewById<TextView>(R.id.textEnterSmsCode)
+        val text = findViewById<TextView>(R.id.textEnterSmsCode)
         text.setText("Мы отправели SMS код для подтвержение на ваш номер +992 ${numberPhone}")
     }
 
@@ -55,7 +52,7 @@ class EnterSmsCode : AppCompatActivity() {
         }
     }
 
-    private fun goToNextActivityIfCodeIsNotEmpty(){
+    private fun goToNextActivityIfCodeIsNotEmpty() {
         val editText1 = findViewById<EditText>(R.id.code1)
         val editText2 = findViewById<EditText>(R.id.code2)
         val editText3 = findViewById<EditText>(R.id.code3)
@@ -63,17 +60,29 @@ class EnterSmsCode : AppCompatActivity() {
         val editText5 = findViewById<EditText>(R.id.code5)
         val editText6 = findViewById<EditText>(R.id.code6)
 
-        val allEditTexts = listOf(editText1, editText2, editText3,editText4,editText5,editText6)
+        val allEditTexts = listOf(editText1, editText2, editText3, editText4, editText5, editText6)
 
         allEditTexts.forEach { editText ->
             editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun beforeTextChanged(
+                    charSequence: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                }
 
-                override fun onTextChanged(charSequence: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun onTextChanged(
+                    charSequence: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                }
 
                 override fun afterTextChanged(editable: Editable?) {
                     if (allEditTexts.all { it.text.toString().isNotEmpty() }) {
-                        val intent = Intent(this@EnterSmsCode, MainMenu::class.java)
+                        val intent = Intent(this@EnterSmsCode, Registration::class.java)
                         startActivity(intent)
 
                     }
