@@ -1,0 +1,253 @@
+/* Ride Card - BlaBlaCar Style */
+.ride-card {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem 2rem;
+    /* Increased padding */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    /* Subtle shadow */
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    /* More space between cards */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    /* Increased gap inside card */
+}
+
+.ride-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary);
+    /* Highlight on hover */
+    transform: translateY(-1px);
+}
+
+/* --- Top Section --- */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.route-horizontal {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    padding-top: 0.5rem;
+    /* Space for timeline alignment */
+}
+
+.point {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    position: relative;
+    z-index: 2;
+    /* Above line */
+}
+
+/* Time */
+.time {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+/* City */
+.city {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Connector Nodes (Circles) */
+.connector-node {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid var(--text-main);
+    position: absolute;
+    top: 6px;
+    /* Align with middle of first line of text roughly? No, specific position */
+    /* Wait, the image shows nodes on the line. Let's position relative to flex */
+    display: none;
+    /* Actually image uses a line with endpoints next to time? Let's hide for a sec and use the duration line style */
+}
+
+/* Duration & Line */
+.route-duration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 0 0.5rem;
+    min-width: 120px;
+    margin-top: 6px;
+    /* visual alignment with time */
+}
+
+.duration-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    position: absolute;
+    top: -20px;
+    /* Text above line? Or just regular flow */
+    /* Image: Time 08:00 -- 7h 20 -- 15:20 */
+    /* Actually image: 
+       08:00 O---------- 7h 20 ----------O 15:20 
+       Moscow                             Kudrovo
+    */
+    position: relative;
+    top: -2px;
+    background: var(--bg-card);
+    padding: 0 0.5rem;
+    z-index: 2;
+}
+
+.duration-line {
+    width: 100%;
+    height: 4px;
+    /* Thick line */
+    background-color: var(--text-main);
+    /* Dark teal line */
+    border-radius: 2px;
+    position: relative;
+}
+
+/* Add circles to ends of line */
+.duration-line::before,
+.duration-line::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: var(--bg-card);
+    border: 2px solid var(--text-main);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.duration-line::before {
+    left: -5px;
+}
+
+.duration-line::after {
+    right: -5px;
+}
+
+
+/* Price */
+.price-container {
+    padding-left: 1rem;
+}
+
+.price {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    white-space: nowrap;
+}
+
+/* --- Bottom Section --- */
+.card-bottom {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.driver-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon-wrapper {
+    color: var(--text-secondary);
+}
+
+.driver-info-block {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.driver-avatar-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.driver-avatar-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.driver-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: var(--bg-main);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.options-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-left: 1px solid var(--border);
+    padding-left: 1rem;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+    .route-horizontal {
+        flex-direction: column;
+        gap: 1.5rem;
+        position: relative;
+    }
+
+    .route-duration {
+        display: none;
+        /* Hide horizontal visual on mobile */
+    }
+
+    .price {
+        font-size: 1.5rem;
+    }
+
+    .card-top {
+        align-items: flex-start;
+    }
+}

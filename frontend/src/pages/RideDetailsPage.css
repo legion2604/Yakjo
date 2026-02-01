@@ -1,0 +1,515 @@
+.ride-details-page {
+    padding-top: 2rem;
+    padding-bottom: 5rem;
+    max-width: 1100px;
+    /* Wider container */
+    margin: 0 auto;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    /* Dark blue-ish */
+    margin-bottom: 1.5rem;
+}
+
+.details-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+}
+
+/* --- Cards --- */
+.content-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    /* Very subtle shadow */
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+}
+
+.hoverable-card {
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.hoverable-card:hover {
+    background-color: #f9f9f9;
+}
+
+[data-theme='dark'] .hoverable-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+
+/* --- Timeline Grid (Main) --- */
+.timeline-grid {
+    display: grid;
+    grid-template-columns: 60px 24px 1fr;
+    /* Time | Visual | Info */
+    gap: 0 1.5rem;
+}
+
+.t-cell {
+    position: relative;
+}
+
+/* Time Column */
+.t-time {
+    text-align: right;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    padding-top: 0;
+    line-height: 1.2;
+}
+
+.t-time.duration {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.duration-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Visual Column */
+.t-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.t-node {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--text-main);
+    z-index: 2;
+    margin-top: 4px;
+    /* Optical alignment with text top */
+}
+
+.t-line {
+    width: 2px;
+    background-color: var(--text-main);
+    flex: 1;
+    width: 2px;
+}
+
+/* Ensure line connects perfectly */
+.t-visual .t-line {
+    position: absolute;
+    top: 10px;
+    bottom: -10px;
+    /* Extend to next cell */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.t-visual.middle .t-line {
+    top: -10px;
+    bottom: -10px;
+}
+
+/* Remove line from last node */
+.t-node.bottom+.t-line {
+    display: none;
+}
+
+/* Fix for the grid logical flow - Last cell has no line */
+.t-visual:last-child .t-line {
+    display: none;
+}
+
+/* Specific targeting for end node visual wrapper */
+.timeline-grid>.t-visual:nth-child(8) .t-line {
+    /* 3rd row, 2nd col is 8th child? No. 3 rows * 3 cols = 9 items. 
+   Row 1: 1, 2, 3
+   Row 2: 4, 5, 6
+   Row 3: 7, 8, 9
+   Target 8.
+*/
+    display: none;
+}
+
+/* Or just don't render it in JSX for the last one */
+
+
+/* Info Column */
+.t-info {
+    padding-bottom: 2rem;
+}
+
+/* Align with top */
+/* Align with top - no special style needed currently */
+
+.t-info.middle {
+    padding-bottom: 0;
+    min-height: 2rem;
+    /* Spacing */
+}
+
+.t-info.end {
+    padding-bottom: 0;
+}
+
+.t-city {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.t-address {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* --- Driver & Features Card --- */
+.driver-features-card {
+    padding: 0;
+    /* Let children handle padding, or pad wrapper */
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hoverable-row {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+cursor: pointer;
+transition: opacity 0.2s;
+}
+
+.hoverable-row:hover {
+    opacity: 0.8;
+}
+
+.driver-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.driver-main-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.driver-avatar-md {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.driver-avatar-md img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.driver-name-lg {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.driver-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+
+.rating-val {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.card-divider {
+    height: 1px;
+    background: var(--border);
+    width: 100%;
+}
+
+/* --- Features --- */
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.feature-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.feature-icon {
+    color: var(--text-secondary);
+    min-width: 24px;
+}
+
+.feature-text {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+/* --- Ask Question --- */
+.ask-question-btn {
+    margin-top: 2rem;
+}
+
+/* --- Sidebar (Booking) --- */
+.summary-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 90px;
+}
+
+.summary-date {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+}
+
+/* Mini Timeline */
+.mini-timeline {
+    margin-bottom: 1.5rem;
+}
+
+.mini-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    position: relative;
+    /* font-size smaller */
+    font-size: 0.95rem;
+}
+
+.mini-time {
+    font-weight: 600;
+    color: var(--text-main);
+    min-width: 45px;
+}
+
+.mini-visual {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--text-main);
+    z-index: 2;
+    margin-top: 4px;
+}
+
+.mini-visual.top::after {
+    content: '';
+    position: absolute;
+    left: 60px;
+    /* Center of visual (8px width -> 4px center, line is 2px width -> left 3px) */
+    top: 10px;
+    height: 50px;
+    /* height to next node roughly */
+    width: 2px;
+    background: var(--text-main);
+    z-index: 1;
+}
+
+.mini-city {
+    color: var(--text-secondary);
+}
+
+.mini-duration {
+    padding-left: calc(70px + 0.75rem);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0.25rem 0;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1rem 0;
+}
+
+/* Mini Driver */
+.mini-driver-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mini-driver-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.driver-avatar-xs {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--bg-main);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.driver-avatar-xs img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mini-driver-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.mini-driver-text .name {
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.mini-driver-text .rating {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+
+/* Price Section */
+.price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.passengers-label {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.total-price-lg {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .details-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+    }
+
+    /* Make button fixed bottom on mobile? Optional, but better for conversion */
+    .phone-reveal-box {
+        background-color: var(--bg-main);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        text-align: center;
+        border: 1px solid var(--primary);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .phone-number-link {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+}
+
+.phone-reveal-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1.15rem 1.5rem;
+    background-color: var(--primary);
+    color: white;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.25);
+    gap: 0.75rem;
+    margin-top: 2.5rem !important;
+}
+
+.phone-reveal-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
+}
+
+.pill-button {
+    display: flex !important;
+    width: 100% !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 1.15rem 1.5rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.25);
+    transition: all 0.2s ease !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 2.5rem !important;
+}
+
+.pill-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
+}
