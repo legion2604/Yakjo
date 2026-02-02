@@ -30,5 +30,5 @@ func InitDB() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Successfully connected to PostgresSQL!")
+	log.Println("Successfully connected to PostgresSQL!")
 }
