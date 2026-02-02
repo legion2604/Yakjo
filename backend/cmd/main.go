@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"backend/pkg/config"
 )
 
 func main() {
-	fmt.Println("Hello World")
+	config.LoadEnv()
 }
