@@ -1,7 +1,7 @@
 package database
 
 import (
-	"Yakjo/pkg/config"
+	"backend/pkg/config"
 	"database/sql"
 	"fmt"
 	"log"
