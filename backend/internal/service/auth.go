@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -19,6 +20,7 @@ type authService struct {
 
 type AuthService interface {
 	SendOtp(phone model.PhoneRequest) error
+	VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error)
 }
 
 func NewAuthService(r repository.AuthRepository) AuthService {
@@ -33,6 +35,7 @@ func (s *authService) SendOtp(phone model.PhoneRequest) error {
 		Message:    fmt.Sprintf("Your code is: %s", code),
 	}
 	err := s.r.SaveOtp(phone.Phone, utils.GenerateHashFromPassword(code)) // сохраняем код в БД
+	log.Println("Code: ", code)
 
 	bodyBytes, _ := json.Marshal(reqBody)
 
@@ -63,4 +66,20 @@ func (s *authService) SendOtp(phone model.PhoneRequest) error {
 		return err
 	}
 	return nil
+}
+
+func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) {
+	validOtpHash, err := s.r.GetValidOtpHash(req.Phone)
+	if err != nil {
+		return model.GetUserInfo{}, err
+	}
+	isCodeValid := utils.ComparePasswords(validOtpHash, req.Code)
+	if !isCodeValid {
+		return model.GetUserInfo{}, errors.New("Неверный код")
+	}
+	userInfo, err := s.r.GetUserInfo(req.Phone)
+	if err != nil {
+		return model.GetUserInfo{}, err
+	}
+	return userInfo, nil
 }

@@ -1,6 +1,10 @@
 package repository
 
-import "database/sql"
+import (
+	"backend/internal/model"
+	"database/sql"
+	"errors"
+)
 
 type authRepository struct {
 	db *sql.DB
@@ -8,6 +12,8 @@ type authRepository struct {
 
 type AuthRepository interface {
 	SaveOtp(phone, codeHash string) error
+	GetValidOtpHash(phone string) (string, error)
+	GetUserInfo(phone string) (model.GetUserInfo, error)
 }
 
 func NewAuthRepository(db *sql.DB) AuthRepository {
@@ -17,9 +23,43 @@ func NewAuthRepository(db *sql.DB) AuthRepository {
 func (r *authRepository) SaveOtp(phone, codeHash string) error {
 	_, err := r.db.Exec(`
         INSERT INTO phone_otps(phone, code_hash, expires_at)
-        VALUES($1, $2, NOW() + INTERVAL '5 minutes')
+        VALUES($1, $2, NOW() + INTERVAL '120 minutes') 
         ON CONFLICT(phone)
         DO UPDATE SET code_hash = EXCLUDED.code_hash, expires_at = EXCLUDED.expires_at
-    `, phone, codeHash)
+    `, phone, codeHash) // 120 минут уменьшим до 5 мин в проде
 	return err
+}
+
+func (r *authRepository) GetValidOtpHash(phone string) (string, error) {
+	var hash string
+	err := r.db.QueryRow("SELECT code_hash FROM phone_otps WHERE phone=$1 AND expires_at>NOW() AND attempts<5", phone).Scan(&hash)
+
+	if err != nil {
+		return "", err
+	}
+
+	return hash, nil
+}
+
+func (r *authRepository) GetUserInfo(phone string) (model.GetUserInfo, error) {
+	var res model.GetUserInfo
+	res.Phone = phone
+
+	err := r.db.QueryRow(`
+		SELECT id, first_name, avatar_url
+		FROM users
+		WHERE phone = $1
+	`, phone).Scan(&res.Id, &res.FirstName, &res.AvatarUrl)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		res.IsNewUser = true
+		return res, nil
+	}
+
+	if err != nil {
+		return model.GetUserInfo{}, err
+	}
+
+	res.IsNewUser = false
+	return res, nil
 }
