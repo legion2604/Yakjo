@@ -59,7 +59,7 @@ func (s *authService) SendOtp(phone model.PhoneRequest) error {
 	if err != nil {
 		return err
 	}
-	log.Println("Verify OTP:", phone.Phone)
+	log.Println("Verify OTP:", code)
 	return nil
 }
 

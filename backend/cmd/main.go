@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/internal/controller"
+	"backend/internal/middleware"
 	"backend/internal/repository"
 	"backend/internal/route"
 	"backend/internal/service"
@@ -21,9 +22,11 @@ func main() {
 	authService := service.NewAuthService(authRepo)
 	authController := controller.NewAuthController(authService)
 
+	c.Use(middleware.CORSMiddleware())
+
 	api := c.Group("/api")
 	{
 		route.NewAuthRoute(authController, api)
 	}
-	c.Run(":8080")
+	c.Run("localhost:8080")
 }
