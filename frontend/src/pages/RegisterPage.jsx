@@ -59,15 +59,6 @@ const RegisterPage = () => {
                 <form onSubmit={handleRegister} className="auth-form">
                     <div className="form-grid">
                         <Input
-                            icon={Phone}
-                            type="tel"
-                            value={form.phone}
-                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                            placeholder={t('auth.phonePlaceholder') || 'Номер телефона'}
-                            required
-                        />
-
-                        <Input
                             icon={User}
                             type="text"
                             value={form.firstName}

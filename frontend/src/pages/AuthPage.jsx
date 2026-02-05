@@ -37,7 +37,7 @@ const AuthPage = () => {
             await sendOtp(phone);
             setStep(2);
             // Mock notification
-            alert(`Код подтверждения: 1234`);
+            alert(`Код подтверждения: 123456`);
         } catch (err) {
             setError(t('auth.errorSend'));
         } finally {
@@ -47,7 +47,7 @@ const AuthPage = () => {
 
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
-        if (otp.length !== 4) {
+        if (otp.length !== 6) {
             setError(t('auth.errorOtp'));
             return;
         }
@@ -114,7 +114,7 @@ const AuthPage = () => {
                             placeholder={t('auth.otpPlaceholder')}
                             required
                             autoFocus
-                            maxLength={4}
+                            maxLength={6}
                             error={error}
                         />
 
@@ -125,7 +125,7 @@ const AuthPage = () => {
                         <button
                             type="button"
                             className="resend-btn"
-                            onClick={() => alert('Код отправлен повторно: 1234')}
+                            onClick={() => alert('Код отправлен повторно: 123456')}
                         >
                             {t('auth.resend')}
                         </button>

@@ -3,7 +3,7 @@
  * Автоматически добавляет credentials: 'include' для работы с HttpOnly cookies
  */
 
-const BASE_URL = 'https://api.yakjo.tj/v1'; // В будущем можно вынести в ENV
+const BASE_URL = 'http://localhost:8080/api'; // В будущем можно вынести в ENV
 
 class ApiClient {
     async request(endpoint, options = {}) {
