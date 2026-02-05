@@ -21,6 +21,7 @@ type authService struct {
 type AuthService interface {
 	SendOtp(phone model.PhoneRequest) error
 	VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error)
+	SaveUserData(user model.RegisterUser) (int, error)
 }
 
 func NewAuthService(r repository.AuthRepository) AuthService {
@@ -82,4 +83,12 @@ func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) 
 		return model.GetUserInfo{}, err
 	}
 	return userInfo, nil
+}
+
+func (s *authService) SaveUserData(user model.RegisterUser) (int, error) {
+	id, err := s.r.SaveUserData(user)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }

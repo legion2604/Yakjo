@@ -11,5 +11,6 @@ func NewAuthRoute(controller controller.AuthController, group *gin.RouterGroup) 
 	{
 		auth.POST("/send-otp", controller.SendOTP)
 		auth.POST("/verify-otp", controller.VerifyOTP)
+		auth.POST("/register", controller.SaveUserData)
 	}
 }

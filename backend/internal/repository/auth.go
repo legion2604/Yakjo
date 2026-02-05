@@ -14,6 +14,7 @@ type AuthRepository interface {
 	SaveOtp(phone, codeHash string) error
 	GetValidOtpHash(phone string) (string, error)
 	GetUserInfo(phone string) (model.GetUserInfo, error)
+	SaveUserData(user model.RegisterUser) (int, error)
 }
 
 func NewAuthRepository(db *sql.DB) AuthRepository {
@@ -62,4 +63,13 @@ func (r *authRepository) GetUserInfo(phone string) (model.GetUserInfo, error) {
 
 	res.IsNewUser = false
 	return res, nil
+}
+
+func (r *authRepository) SaveUserData(user model.RegisterUser) (int, error) {
+	var id int
+	err := r.db.QueryRow("INSERT INTO users (first_name, last_name, birth_date, car_brand, email, phone, bio) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id", user.FirstName, user.LastName, user.BirthDate, user.CarBrand, user.Email, user.Phone, user.Bio).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }

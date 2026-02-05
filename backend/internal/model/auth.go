@@ -12,3 +12,13 @@ type GetUserInfo struct {
 	AvatarUrl string `json:"avatarUrl"`
 	IsNewUser bool   `json:"isNewUser"`
 }
+
+type RegisterUser struct {
+	Phone     string `json:"phone"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	BirthDate string `json:"birthDate"`
+	CarBrand  string `json:"carBrand"`
+	Email     string `json:"email"`
+	Bio       string `json:"bio"`
+}
