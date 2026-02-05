@@ -16,10 +16,18 @@ export const authApi = {
     },
 
     /**
-     * Завершение регистрации (сохранение имени/фамилии)
+     * Завершение регистрации (сохранение данных пользователя)
      */
     register: (data) => {
+        // data должен содержать phone, firstName, lastName, birthDate, carBrand, email, bio
         return api.post('/auth/register', data);
+    },
+
+    /**
+     * Обновление access токена через refresh токен (в куках)
+     */
+    refreshToken: () => {
+        return api.post('/auth/refresh-token');
     },
 
     /**

@@ -59,7 +59,7 @@ const AuthPage = () => {
             const data = await verifyOtp(phone, otp);
 
             if (data.isNewUser) {
-                navigate('/register', { state: { from }, replace: true });
+                navigate('/register', { state: { from, phone: data.phone || phone }, replace: true });
             } else {
                 navigate(from, { replace: true });
             }

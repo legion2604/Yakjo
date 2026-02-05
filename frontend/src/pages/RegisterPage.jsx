@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, UserPlus, Calendar, Car, Mail, AlignLeft } from 'lucide-react';
+import { User, UserPlus, Calendar, Car, Mail, AlignLeft, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import Button from '../components/ui/Button';
@@ -14,6 +14,7 @@ const RegisterPage = () => {
     const { t } = useSettings();
 
     const [form, setForm] = useState({
+        phone: location.state?.phone || '',
         firstName: '',
         lastName: '',
         birthDate: '',
@@ -57,6 +58,15 @@ const RegisterPage = () => {
 
                 <form onSubmit={handleRegister} className="auth-form">
                     <div className="form-grid">
+                        <Input
+                            icon={Phone}
+                            type="tel"
+                            value={form.phone}
+                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                            placeholder={t('auth.phonePlaceholder') || 'Номер телефона'}
+                            required
+                        />
+
                         <Input
                             icon={User}
                             type="text"
