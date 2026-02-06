@@ -9,7 +9,7 @@ import (
 
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, err := c.Cookie("token")
+		token, err := c.Cookie("access_token")
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "No access token"})
 			c.Abort()
