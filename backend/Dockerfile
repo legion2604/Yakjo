@@ -1,35 +1,29 @@
-# 1. Берём образ с Go — он нужен ТОЛЬКО для сборки
-FROM golang:1.22-alpine AS builder
+# Используем более свежую версию Go
+FROM golang:alpine AS builder
 
-# 2. Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# 3. Копируем файлы зависимостей
+# Копируем файлы зависимостей
 COPY go.mod go.sum ./
+# 1. Отключаем любые запросы пароля (чтобы не висело вечно)
+ENV GIT_TERMINAL_PROMPT=0
 
-# 4. Скачиваем зависимости
-RUN go mod download
+# 2. Настраиваем прокси (часто решает проблему "затыка" сети)
+ENV GOPROXY=https://goproxy.io,direct
+# 3. Добавляем -x для отладки (покажет, что именно качается в моменте)
+RUN go mod download -x
 
-# 5. Копируем весь исходный код backend'а
+# Копируем исходный код
 COPY . .
 
-# 6. Собираем бинарный файл приложения
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o project_yakjo
+# Собираем приложение
+RUN CGO_ENABLED=0 GOOS=linux go build -o /yakjo_app ./cmd/main.go
 
-# 7. Берём минимальный Linux без Go
+# Финальный легковесный образ
 FROM alpine:latest
+WORKDIR /root/
+COPY --from=builder /yakjo_app .
+COPY --from=builder /app/migrations ./migrations
 
-# 8. Опять задаём рабочую директорию
-WORKDIR /app
-
-# 9. Устанавливаем SSL-сертификаты (нужны почти всегда)
-RUN apk add --no-cache ca-certificates
-
-# 10. Копируем ТОЛЬКО бинарник из стадии сборки
-COPY --from=builder /app/project_yakjo .
-
-# 11. Документируем порт, который слушает приложение
 EXPOSE 8080
-
-# 12. Запускаем бинарник
-CMD ["./project_yakjo"]
+CMD ["./yakjo_app"]
