@@ -30,6 +30,8 @@ services:
     depends_on:
       db:
         condition: service_healthy # Приложение запустится только когда БД будет готова
+    volumes:
+      - ./.env:/root/.env  # Монтируем локальный .env в папку /root/ внутри контейнера
     environment:
       # Обрати внимание: хост теперь не localhost, а имя сервиса 'db'
       DB_HOST: db

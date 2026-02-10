@@ -24,6 +24,7 @@ FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /yakjo_app .
 COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/.env ./.env
 
 EXPOSE 8080
 CMD ["./yakjo_app"]
