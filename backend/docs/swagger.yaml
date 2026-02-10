@@ -1,0 +1,217 @@
+basePath: /api
+definitions:
+  backend_internal_model.GetUserInfo:
+    properties:
+      avatarUrl:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      isNewUser:
+        type: boolean
+      phone:
+        type: string
+    type: object
+  backend_internal_model.PhoneRequest:
+    properties:
+      phone:
+        type: string
+    type: object
+  backend_internal_model.RegisterUser:
+    properties:
+      bio:
+        type: string
+      birthDate:
+        type: string
+      carBrand:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+    type: object
+  backend_internal_model.VerifyOtp:
+    properties:
+      code:
+        type: string
+      phone:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API документация проекта Yakjo сервиса для поиска попутчиков.
+  title: Yakjo Service API
+  version: "1.0"
+paths:
+  /auth/logout:
+    post:
+      description: 'Удаляет JWT токен из Cookie (устанавливает Max-Age: -1).'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'userInfo: nil'
+          headers:
+            Set-Cookie:
+              description: access_token=; Max-Age=0
+              type: string
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - CookieAuth: []
+      summary: Выход из системы
+      tags:
+      - auth
+  /auth/me:
+    get:
+      description: Извлекает ID пользователя из JWT токена, находящегося в httpOnly
+        Cookie, и возвращает информацию о профиле.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные профиля пользователя
+          schema:
+            $ref: '#/definitions/backend_internal_model.GetUserInfo'
+        "401":
+          description: 'error: Unauthorized (токен отсутствует или невалиден)'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Internal Server Error (ошибка БД или сервиса)'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - CookieAuth: []
+      summary: Получить данные текущего пользователя
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Сохраняет дополнительные данные нового пользователя и выдает JWT
+        токен в Cookie
+      parameters:
+      - description: Данные для регистрации (имя, фамилия и т.д.)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/backend_internal_model.RegisterUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'userInfo: данные пользователя'
+          headers:
+            Set-Cookie:
+              description: access_token=...; HttpOnly
+              type: string
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/backend_internal_model.RegisterUser'
+            type: object
+        "400":
+          description: 'error: ошибка валидации JSON'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: внутренняя ошибка сервера'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Завершение регистрации пользователя
+      tags:
+      - auth
+  /auth/send-otp:
+    post:
+      consumes:
+      - application/json
+      description: Принимает номер телефона и отправляет на него одноразовый пароль
+        (OTP)
+      parameters:
+      - description: Данные телефона
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/backend_internal_model.PhoneRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'massage: Код отправлен'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: текст ошибки'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Отправка OTP кода
+      tags:
+      - auth
+  /auth/verify-otp:
+    post:
+      consumes:
+      - application/json
+      description: Проверяет код из SMS. Если пользователь существует, устанавливает
+        JWT в Cookie.
+      parameters:
+      - description: Код верификации и телефон
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/backend_internal_model.VerifyOtp'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Данные пользователя (структура зависит от вашей модели)
+          headers:
+            Set-Cookie:
+              description: access_token=...; HttpOnly
+              type: string
+          schema:
+            $ref: '#/definitions/backend_internal_model.GetUserInfo'
+        "400":
+          description: 'error: неверный код или данные'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: ошибка генерации токена'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Верификация OTP кода
+      tags:
+      - auth
+securityDefinitions:
+  CookieAuth:
+    description: 'Для тестирования введите в поле: access_token=ваш_токен_тут'
+    in: header
+    name: Cookie
+    type: apiKey
+swagger: "2.0"
