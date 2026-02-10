@@ -4,6 +4,7 @@ import (
 	"backend/internal/model"
 	"database/sql"
 	"errors"
+	"log"
 )
 
 type authRepository struct {
@@ -29,7 +30,11 @@ func (r *authRepository) SaveOtp(phone, codeHash string) error {
         ON CONFLICT(phone)
         DO UPDATE SET code_hash = EXCLUDED.code_hash, expires_at = EXCLUDED.expires_at
     `, phone, codeHash) // 120 минут уменьшим до 5 мин в проде
-	return err
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
 }
 
 func (r *authRepository) GetValidOtpHash(phone string) (string, error) {
@@ -37,6 +42,7 @@ func (r *authRepository) GetValidOtpHash(phone string) (string, error) {
 	err := r.db.QueryRow("SELECT code_hash FROM phone_otps WHERE phone=$1 AND expires_at>NOW() AND attempts<5", phone).Scan(&hash)
 
 	if err != nil {
+		log.Println(err)
 		return "", err
 	}
 
@@ -59,6 +65,7 @@ func (r *authRepository) GetUserInfoByPhone(phone string) (model.GetUserInfo, er
 	}
 
 	if err != nil {
+		log.Println(err)
 		return model.GetUserInfo{}, err
 	}
 
@@ -70,6 +77,7 @@ func (r *authRepository) SaveUserData(user model.RegisterUser) (int, error) {
 	var id int
 	err := r.db.QueryRow("INSERT INTO users (first_name, last_name, birth_date, car_brand, email, phone, bio) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id", user.FirstName, user.LastName, user.BirthDate, user.CarBrand, user.Email, user.Phone, user.Bio).Scan(&id)
 	if err != nil {
+		log.Println(err)
 		return 0, err
 	}
 	return id, nil
@@ -86,6 +94,7 @@ func (r *authRepository) GetUserInfoById(userId int) (model.GetUserInfo, error) 
 	`, userId).Scan(&res.Phone, &res.FirstName, &res.AvatarUrl)
 
 	if err != nil {
+		log.Println(err)
 		return model.GetUserInfo{}, err
 	}
 	return res, nil

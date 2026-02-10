@@ -58,6 +58,7 @@ func (s *authService) SendOtp(phone model.PhoneRequest) error {
 	//}
 	err := s.r.SaveOtp(phone.Phone, utils.GenerateHashFromPassword(code)) // сохраняем код в БД
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	log.Println("Verify OTP:", code)
@@ -67,10 +68,12 @@ func (s *authService) SendOtp(phone model.PhoneRequest) error {
 func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) {
 	validOtpHash, err := s.r.GetValidOtpHash(req.Phone)
 	if err != nil {
+		log.Println(err)
 		return model.GetUserInfo{}, err
 	}
 	isCodeValid := utils.ComparePasswords(validOtpHash, req.Code)
 	if !isCodeValid {
+		log.Println(err)
 		return model.GetUserInfo{}, errors.New("Неверный код")
 	}
 	userInfo, err := s.r.GetUserInfoByPhone(req.Phone)
@@ -83,6 +86,7 @@ func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) 
 func (s *authService) SaveUserData(user model.RegisterUser) (int, error) {
 	id, err := s.r.SaveUserData(user)
 	if err != nil {
+		log.Println(err)
 		return 0, err
 	}
 	return id, nil
@@ -91,6 +95,7 @@ func (s *authService) SaveUserData(user model.RegisterUser) (int, error) {
 func (s *authService) Me(userId int) (model.GetUserInfo, error) {
 	res, err := s.r.GetUserInfoById(userId)
 	if err != nil {
+		log.Println(err)
 		return model.GetUserInfo{}, err
 	}
 	return res, nil
