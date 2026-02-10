@@ -14,6 +14,7 @@ func NewAuthRoute(controller controller.AuthController, group *gin.RouterGroup) 
 		auth.POST("/verify-otp", controller.VerifyOTP)
 		auth.POST("/register", controller.SaveUserData)
 		auth.GET("/me", middleware.JWTAuthMiddleware(), controller.Me)
+		auth.POST("/logout", middleware.JWTAuthMiddleware(), controller.Logout)
 
 	}
 }

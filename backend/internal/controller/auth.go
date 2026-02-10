@@ -21,6 +21,7 @@ type AuthController interface {
 	VerifyOTP(cxt *gin.Context)
 	SaveUserData(cxt *gin.Context)
 	Me(cxt *gin.Context)
+	Logout(cxt *gin.Context)
 }
 
 func NewAuthController(s service.AuthService) AuthController {
@@ -99,4 +100,9 @@ func (c *authController) Me(cxt *gin.Context) {
 		return
 	}
 	cxt.JSON(http.StatusOK, res)
+}
+
+func (c *authController) Logout(cxt *gin.Context) {
+	cxt.SetCookie("access_token", "", -1, "/", "", false, true)
+	cxt.JSON(http.StatusOK, gin.H{"userInfo": nil})
 }
