@@ -9,9 +9,23 @@ import (
 	"backend/pkg/config"
 	"backend/pkg/database"
 
+	_ "backend/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title           Yakjo Service API
+// @version         1.0
+// @description     API документация проекта Yakjo сервиса для поиска попутчиков.
+// @host      localhost:8080
+// @BasePath  /api
+
+// @securityDefinitions.apikey CookieAuth
+// @in                         header
+// @name                       Cookie
+// @description                Для тестирования введите в поле: access_token=ваш_токен_тут
 func main() {
 	config.LoadEnv()
 	database.InitDB()
@@ -28,5 +42,8 @@ func main() {
 	{
 		route.NewAuthRoute(authController, api)
 	}
+
+	c.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
 	c.Run("localhost:8080")
 }
