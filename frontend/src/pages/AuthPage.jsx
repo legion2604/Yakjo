@@ -88,7 +88,7 @@ const AuthPage = () => {
                 </div>
 
                 {step === 1 ? (
-                    <form onSubmit={handleSendOtp} className="auth-form">
+                    <form key="step1" onSubmit={handleSendOtp} className="auth-form">
                         <Input
                             icon={Phone}
                             type="tel"
@@ -105,7 +105,7 @@ const AuthPage = () => {
                         </Button>
                     </form>
                 ) : (
-                    <form onSubmit={handleVerifyOtp} className="auth-form">
+                    <form key="step2" onSubmit={handleVerifyOtp} className="auth-form">
                         <Input
                             icon={Lock}
                             type="text"
