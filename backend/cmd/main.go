@@ -19,7 +19,6 @@ import (
 // @title           Yakjo Service API
 // @version         1.0
 // @description     API документация проекта Yakjo сервиса для поиска попутчиков.
-// @host      localhost:8080
 // @BasePath  /api
 // @securityDefinitions.apikey CookieAuth
 // @in                         header
@@ -44,5 +43,5 @@ func main() {
 
 	c.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	c.Run(":8080")
+	c.Run("0.0.0.0:8080")
 }
