@@ -1,5 +1,5 @@
 -- создаём таблицу для OTP по телефону
-CREATE TABLE phone_otps
+CREATE TABLE IF NOT EXISTS phone_otps
 (
     phone      TEXT NOT NULL
         CONSTRAINT phone_otps_pk

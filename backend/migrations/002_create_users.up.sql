@@ -1,5 +1,5 @@
 -- создаём таблицу пользователей
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id         INTEGER DEFAULT nextval('users_id_seq'::regclass) NOT NULL,
     first_name TEXT,
