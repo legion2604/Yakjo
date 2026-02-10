@@ -9,6 +9,3 @@ CREATE TABLE IF NOT EXISTS phone_otps
     attempts   INTEGER DEFAULT 0
 );
 
--- назначаем владельца таблицы
-ALTER TABLE phone_otps
-    OWNER TO postgres;

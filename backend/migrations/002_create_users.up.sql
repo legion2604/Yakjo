@@ -1,7 +1,7 @@
 -- создаём таблицу пользователей
 CREATE TABLE IF NOT EXISTS users
 (
-    id         INTEGER DEFAULT nextval('users_id_seq'::regclass) NOT NULL,
+    id         SERIAL, -- Автоматически создаст последовательность    first_name TEXT,
     first_name TEXT,
     last_name  TEXT,
     birth_date TIMESTAMP,
@@ -14,6 +14,3 @@ CREATE TABLE IF NOT EXISTS users
     avatar_url TEXT DEFAULT 'null'::TEXT
 );
 
--- назначаем владельца таблицы
-ALTER TABLE users
-    OWNER TO postgres;
