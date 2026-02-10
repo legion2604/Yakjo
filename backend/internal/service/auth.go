@@ -16,6 +16,7 @@ type AuthService interface {
 	SendOtp(phone model.PhoneRequest) error
 	VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error)
 	SaveUserData(user model.RegisterUser) (int, error)
+	Me(userId int) (model.GetUserInfo, error)
 }
 
 func NewAuthService(r repository.AuthRepository) AuthService {
@@ -72,7 +73,7 @@ func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) 
 	if !isCodeValid {
 		return model.GetUserInfo{}, errors.New("Неверный код")
 	}
-	userInfo, err := s.r.GetUserInfo(req.Phone)
+	userInfo, err := s.r.GetUserInfoByPhone(req.Phone)
 	if err != nil {
 		return model.GetUserInfo{}, err
 	}
@@ -85,4 +86,12 @@ func (s *authService) SaveUserData(user model.RegisterUser) (int, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+func (s *authService) Me(userId int) (model.GetUserInfo, error) {
+	res, err := s.r.GetUserInfoById(userId)
+	if err != nil {
+		return model.GetUserInfo{}, err
+	}
+	return res, nil
 }

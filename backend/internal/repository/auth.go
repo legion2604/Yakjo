@@ -13,8 +13,9 @@ type authRepository struct {
 type AuthRepository interface {
 	SaveOtp(phone, codeHash string) error
 	GetValidOtpHash(phone string) (string, error)
-	GetUserInfo(phone string) (model.GetUserInfo, error)
+	GetUserInfoByPhone(phone string) (model.GetUserInfo, error)
 	SaveUserData(user model.RegisterUser) (int, error)
+	GetUserInfoById(userId int) (model.GetUserInfo, error)
 }
 
 func NewAuthRepository(db *sql.DB) AuthRepository {
@@ -42,7 +43,7 @@ func (r *authRepository) GetValidOtpHash(phone string) (string, error) {
 	return hash, nil
 }
 
-func (r *authRepository) GetUserInfo(phone string) (model.GetUserInfo, error) {
+func (r *authRepository) GetUserInfoByPhone(phone string) (model.GetUserInfo, error) {
 	var res model.GetUserInfo
 	res.Phone = phone
 
@@ -72,4 +73,20 @@ func (r *authRepository) SaveUserData(user model.RegisterUser) (int, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+func (r *authRepository) GetUserInfoById(userId int) (model.GetUserInfo, error) {
+	var res model.GetUserInfo
+	res.Id = userId
+
+	err := r.db.QueryRow(`
+		SELECT phone, first_name, avatar_url
+		FROM users
+		WHERE id = $1
+	`, userId).Scan(&res.Phone, &res.FirstName, &res.AvatarUrl)
+
+	if err != nil {
+		return model.GetUserInfo{}, err
+	}
+	return res, nil
 }

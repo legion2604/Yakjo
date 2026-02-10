@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"backend/internal/middleware"
 	"backend/internal/model"
 	"backend/internal/service"
 	"backend/pkg/utils"
@@ -19,6 +20,7 @@ type AuthController interface {
 	SendOTP(cxt *gin.Context)
 	VerifyOTP(cxt *gin.Context)
 	SaveUserData(cxt *gin.Context)
+	Me(cxt *gin.Context)
 }
 
 func NewAuthController(s service.AuthService) AuthController {
@@ -87,4 +89,14 @@ func (c *authController) SaveUserData(cxt *gin.Context) {
 	cxt.SetCookie("access_token", accessToken, 3600, "/", "localhost", false, true)
 
 	cxt.JSON(http.StatusOK, gin.H{"userInfo": req})
+}
+
+func (c *authController) Me(cxt *gin.Context) {
+	userId := middleware.GetUserIDFromContext(cxt)
+	res, err := c.s.Me(userId)
+	if err != nil {
+		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	cxt.JSON(http.StatusOK, res)
 }

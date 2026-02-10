@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const contextKey = "user_id"
+
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("access_token")
@@ -24,4 +26,13 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		c.Set("user_id", claims.UserID)
 		c.Next()
 	}
+}
+
+func GetUserIDFromContext(c *gin.Context) int {
+	id, exists := c.Get(contextKey)
+	if !exists {
+		return 0
+	}
+
+	return id.(int)
 }
