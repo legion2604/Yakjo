@@ -4,10 +4,8 @@ import (
 	"backend/internal/middleware"
 	"backend/internal/model"
 	"backend/internal/service"
-	"backend/pkg/utils"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +20,7 @@ type AuthController interface {
 	SaveUserData(cxt *gin.Context)
 	Me(cxt *gin.Context)
 	Logout(cxt *gin.Context)
+	UpdateToken(cxt *gin.Context)
 }
 
 func NewAuthController(s service.AuthService) AuthController {
@@ -73,20 +72,16 @@ func (c *authController) VerifyOTP(cxt *gin.Context) {
 		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userInfo, err := c.s.VarifyOtp(req)
-	if userInfo.IsNewUser != true {
-		accessToken, err := utils.GenerateJwtToken(userInfo.Id, 15*time.Minute) // 15 мин для access token
-		if err != nil {
-			cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		cxt.SetCookie("access_token", accessToken, 3600, "/", "localhost", false, true)
-	} // сохраняем token в Cookie если пользователь есть в БД
+	userInfo, accessToken, refreshToken, err := c.s.VarifyOtp(req)
 
 	if err != nil {
-		log.Println("userInfo")
 		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	if !userInfo.IsNewUser && accessToken != "" && refreshToken != "" {
+		cxt.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
+		cxt.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
 	}
 
 	cxt.JSON(http.StatusOK, userInfo)
@@ -111,19 +106,16 @@ func (c *authController) SaveUserData(cxt *gin.Context) {
 		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userId, err := c.s.SaveUserData(req)
+	accessToken, refreshToken, err := c.s.SaveUserData(req)
 	if err != nil {
 		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	accessToken, err := utils.GenerateJwtToken(userId, 15*time.Minute) // 15 мин для access token
-	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	cxt.SetCookie("access_token", accessToken, 3600, "/", "localhost", false, true)
 
-	cxt.JSON(http.StatusOK, gin.H{"userInfo": req})
+	cxt.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
+	cxt.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
+
+	cxt.JSON(http.StatusOK, gin.H{"massage": "Register success!"})
 }
 
 // Me godoc
@@ -158,4 +150,19 @@ func (c *authController) Me(cxt *gin.Context) {
 func (c *authController) Logout(cxt *gin.Context) {
 	cxt.SetCookie("access_token", "", -1, "/", "", false, true)
 	cxt.JSON(http.StatusOK, gin.H{"userInfo": nil})
+}
+
+func (c *authController) UpdateToken(cxt *gin.Context) {
+	refreshToken, err := cxt.Cookie("refresh_token")
+	if err != nil {
+		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	newAccessToken, err := c.s.UpdateToken(refreshToken)
+	if err != nil {
+		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	cxt.SetCookie("access_token", newAccessToken, 60*15, "/", "localhost", false, true)
+	cxt.JSON(http.StatusOK, gin.H{"massage": "Update success!"})
 }

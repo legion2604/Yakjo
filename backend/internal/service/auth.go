@@ -6,6 +6,7 @@ import (
 	"backend/pkg/utils"
 	"errors"
 	"log"
+	"time"
 )
 
 type authService struct {
@@ -14,9 +15,10 @@ type authService struct {
 
 type AuthService interface {
 	SendOtp(phone model.PhoneRequest) error
-	VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error)
-	SaveUserData(user model.RegisterUser) (int, error)
+	VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, string, string, error)
+	SaveUserData(user model.RegisterUser) (string, string, error)
 	Me(userId int) (model.GetUserInfo, error)
+	UpdateToken(refreshToken string) (string, error)
 }
 
 func NewAuthService(r repository.AuthRepository) AuthService {
@@ -65,11 +67,11 @@ func (s *authService) SendOtp(phone model.PhoneRequest) error {
 	return nil
 }
 
-func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) {
+func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, string, string, error) {
 	validOtpHash, err := s.r.GetValidOtpHash(req.Phone)
 	if err != nil {
 		log.Println(err)
-		return model.GetUserInfo{}, err
+		return model.GetUserInfo{}, "", "", err
 	}
 	isCodeValid := utils.ComparePasswords(validOtpHash, req.Code)
 	if !isCodeValid {
@@ -77,24 +79,43 @@ func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) 
 		err = s.r.IncrementOTPAttempt(req.Phone)
 		if err != nil {
 			log.Println(err)
-			return model.GetUserInfo{}, err
+			return model.GetUserInfo{}, "", "", err
 		}
-		return model.GetUserInfo{}, errors.New("Неверный код")
+		return model.GetUserInfo{}, "", "", errors.New("Неверный код")
 	}
 	userInfo, err := s.r.GetUserInfoByPhone(req.Phone)
 	if err != nil {
-		return model.GetUserInfo{}, err
+		return model.GetUserInfo{}, "", "", err
 	}
-	return userInfo, nil
+	if userInfo.IsNewUser != true {
+		accessToken, err := utils.GenerateJwtToken(userInfo.Id, 15*time.Minute) // 15 мин для access token
+		if err != nil {
+			return model.GetUserInfo{}, "", "", err
+		}
+		refreshToken, err := utils.GenerateJwtToken(userInfo.Id, 90*24*time.Hour) // 90 дней для refresh token
+		if err != nil {
+			return model.GetUserInfo{}, "", "", err
+		}
+		return userInfo, accessToken, refreshToken, nil
+	} // сохраняем token в Cookie если пользователь есть в БД
+	return userInfo, "", "", nil
 }
 
-func (s *authService) SaveUserData(user model.RegisterUser) (int, error) {
+func (s *authService) SaveUserData(user model.RegisterUser) (string, string, error) {
 	id, err := s.r.SaveUserData(user)
 	if err != nil {
 		log.Println(err)
-		return 0, err
+		return "", "", err
 	}
-	return id, nil
+	accessToken, err := utils.GenerateJwtToken(id, 15*time.Minute) // 15 мин для access token
+	if err != nil {
+		return "", "", err
+	}
+	refreshToken, err := utils.GenerateJwtToken(id, 90*24*time.Hour) // 90 дней для refresh token
+	if err != nil {
+		return "", "", err
+	}
+	return accessToken, refreshToken, nil
 }
 
 func (s *authService) Me(userId int) (model.GetUserInfo, error) {
@@ -104,4 +125,16 @@ func (s *authService) Me(userId int) (model.GetUserInfo, error) {
 		return model.GetUserInfo{}, err
 	}
 	return res, nil
+}
+
+func (s *authService) UpdateToken(refreshToken string) (string, error) {
+	payload, err := utils.VerifyJwtToken(refreshToken)
+	if err != nil {
+		return "", err
+	}
+	newToken, err := utils.GenerateJwtToken(payload.UserID, 15*time.Minute)
+	if err != nil {
+		return "", err
+	}
+	return newToken, nil
 }
