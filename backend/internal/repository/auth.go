@@ -17,6 +17,7 @@ type AuthRepository interface {
 	GetUserInfoByPhone(phone string) (model.GetUserInfo, error)
 	SaveUserData(user model.RegisterUser) (int, error)
 	GetUserInfoById(userId int) (model.GetUserInfo, error)
+	IncrementOTPAttempt(phone string) error
 }
 
 func NewAuthRepository(db *sql.DB) AuthRepository {
@@ -28,7 +29,7 @@ func (r *authRepository) SaveOtp(phone, codeHash string) error {
         INSERT INTO phone_otps(phone, code_hash, expires_at)
         VALUES($1, $2, NOW() + INTERVAL '120 minutes') 
         ON CONFLICT(phone)
-        DO UPDATE SET code_hash = EXCLUDED.code_hash, expires_at = EXCLUDED.expires_at
+        DO UPDATE SET code_hash = EXCLUDED.code_hash, expires_at = EXCLUDED.expires_at, attempts=0
     `, phone, codeHash) // 120 минут уменьшим до 5 мин в проде
 	if err != nil {
 		log.Println(err)
@@ -98,4 +99,12 @@ func (r *authRepository) GetUserInfoById(userId int) (model.GetUserInfo, error) 
 		return model.GetUserInfo{}, err
 	}
 	return res, nil
+}
+
+func (r *authRepository) IncrementOTPAttempt(phone string) error {
+	_, err := r.db.Exec("UPDATE phone_otps SET attemps = attemps + 1 WHERE phone = $1", phone)
+	if err != nil {
+		return err
+	}
+	return nil
 }

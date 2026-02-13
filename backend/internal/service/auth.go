@@ -74,6 +74,11 @@ func (s *authService) VarifyOtp(req model.VerifyOtp) (model.GetUserInfo, error) 
 	isCodeValid := utils.ComparePasswords(validOtpHash, req.Code)
 	if !isCodeValid {
 		log.Println(err)
+		err = s.r.IncrementOTPAttempt(req.Phone)
+		if err != nil {
+			log.Println(err)
+			return model.GetUserInfo{}, err
+		}
 		return model.GetUserInfo{}, errors.New("Неверный код")
 	}
 	userInfo, err := s.r.GetUserInfoByPhone(req.Phone)
