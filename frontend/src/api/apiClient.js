@@ -6,6 +6,26 @@
 const BASE_URL = 'http://localhost:8080/api'; // В будущем можно вынести в ENV
 
 class ApiClient {
+    constructor() {
+        this.isRefreshing = false;
+        this.failedQueue = [];
+    }
+
+    /**
+     * Добавляет запрос в очередь на повторную отправку
+     */
+    processQueue(error, token = null) {
+        this.failedQueue.forEach(prom => {
+            if (error) {
+                prom.reject(error);
+            } else {
+                prom.resolve(token);
+            }
+        });
+
+        this.failedQueue = [];
+    }
+
     async request(endpoint, options = {}) {
         const url = `${BASE_URL}${endpoint}`;
 
@@ -21,12 +41,50 @@ class ApiClient {
         };
 
         try {
-            const response = await fetch(url, config);
+            let response = await fetch(url, config);
 
-            // Обработка 401 Unauthorized (если нужно разлогинить пользователя)
-            if (response.status === 401) {
-                console.warn('Unauthorized access');
-                // window.location.href = '/login'; // Опционально
+            // Обработка 401 Unauthorized
+            if (response.status === 401 && !options._retry && endpoint !== '/auth/refresh-token') {
+                if (this.isRefreshing) {
+                    try {
+                        // Если обновление уже идет, ждем его завершения
+                        await new Promise((resolve, reject) => {
+                            this.failedQueue.push({ resolve, reject });
+                        });
+                        // Повторяем запрос после успешного обновления
+                        return this.request(endpoint, { ...options, _retry: true });
+                    } catch (err) {
+                        return Promise.reject(err);
+                    }
+                }
+
+                this.isRefreshing = true;
+                options._retry = true;
+
+                try {
+                    // Пытаемся обновить токен (прямой вызов fetch чтобы избежать циклических зависимостей)
+                    const refreshResponse = await fetch(`${BASE_URL}/auth/refresh-token`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (refreshResponse.ok) {
+                        this.processQueue(null, true);
+                        // Повторяем исходный запрос
+                        return this.request(endpoint, options);
+                    } else {
+                        // Если обновление не удалось - выбрасываем ошибку (пользователя разлогинит контекст)
+                        const err = new Error('Refresh token expired');
+                        this.processQueue(err, null);
+                        throw err;
+                    }
+                } catch (refreshError) {
+                    this.processQueue(refreshError, null);
+                    throw refreshError;
+                } finally {
+                    this.isRefreshing = false;
+                }
             }
 
             const data = await response.json();
@@ -37,7 +95,7 @@ class ApiClient {
 
             return data;
         } catch (error) {
-            console.error('API Request failed:', error);
+            console.error('API Request failed:', endpoint, error);
             throw error;
         }
     }
