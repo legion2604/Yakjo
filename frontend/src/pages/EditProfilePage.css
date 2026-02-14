@@ -1,0 +1,74 @@
+.edit-profile-page {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 600px;
+}
+
+.edit-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-section h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.textarea-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.textarea-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+@media (max-width: 640px) {
+    .edit-profile-page {
+        padding: 1rem;
+    }
+
+    .edit-card {
+        padding: 1.5rem;
+    }
+
+    .input-group {
+        grid-template-columns: 1fr;
+    }
+}
