@@ -194,9 +194,7 @@
     transition: opacity 0.2s;
 }
 
-cursor: pointer;
-transition: opacity 0.2s;
-}
+
 
 .hoverable-row:hover {
     opacity: 0.8;
@@ -512,4 +510,102 @@ transition: opacity 0.2s;
 .pill-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
+}
+
+/* --- Contact Buttons & Rating --- */
+.contact-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.contact-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: white;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-whatsapp {
+    background-color: #25D366;
+}
+
+.btn-telegram {
+    background-color: #0088cc;
+}
+
+.btn-phone {
+    background-color: var(--primary-color);
+}
+
+.btn-chat {
+    background-color: var(--secondary-color);
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+/* Modal */
+.rating-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s;
+}
+
+.rating-modal {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+.stars-input {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+}
+
+.star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: transform 0.2s, color 0.2s;
+}
+
+.star-btn:hover {
+    transform: scale(1.2);
+}
+
+.star-btn.active {
+    color: #FFB800;
 }

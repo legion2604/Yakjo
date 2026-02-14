@@ -12,6 +12,7 @@ import PublishPage from './pages/PublishPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import RegisterPage from './pages/RegisterPage';
+import EditProfilePage from './pages/EditProfilePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 
@@ -44,6 +45,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile/edit"
+                  element={
+                    <ProtectedRoute>
+                      <EditProfilePage />
                     </ProtectedRoute>
                   }
                 />

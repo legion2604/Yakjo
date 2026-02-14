@@ -1,11 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Phone, Star, Car, ChevronRight, MessageCircle, CheckCircle, Users } from 'lucide-react';
+import { Phone, Star, Car, ChevronRight, MessageCircle, CheckCircle, Users, Smartphone, Send } from 'lucide-react';
 import { ridesApi } from '../api/rides';
+import { usersApi } from '../api/users';
 import Button from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import './RideDetailsPage.css';
+
+const RatingModal = ({ isOpen, onClose, onSubmit }) => {
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState('');
+    const { t } = useSettings();
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="rating-modal-overlay" onClick={onClose}>
+            <div className="rating-modal" onClick={e => e.stopPropagation()}>
+                <h3 className="text-xl font-bold text-center mb-4">Оценить водителя</h3>
+                <div className="stars-input">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                            key={star}
+                            type="button"
+                            className={`star-btn ${rating >= star ? 'active' : ''}`}
+                            onClick={() => setRating(star)}
+                        >
+                            <Star size={32} fill={rating >= star ? "currentColor" : "none"} />
+                        </button>
+                    ))}
+                </div>
+                <textarea
+                    className="textarea-field mb-4 w-full"
+                    placeholder="Напишите отзыв..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    rows="3"
+                />
+                <div className="flex gap-2 justify-end">
+                    <Button variant="ghost" onClick={onClose}>Отмена</Button>
+                    <Button onClick={() => onSubmit(rating, comment)} disabled={rating === 0}>
+                        Отправить
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const RideDetailsPage = () => {
     const { id } = useParams();
@@ -15,7 +57,8 @@ const RideDetailsPage = () => {
 
     const [ride, setRide] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [showPhone, setShowPhone] = useState(false);
+    const [contacts, setContacts] = useState(null);
+    const [showRatingModal, setShowRatingModal] = useState(false);
 
     useEffect(() => {
         const fetchRideDetails = async () => {
@@ -37,16 +80,19 @@ const RideDetailsPage = () => {
                     duration: '7ч 20',
                     price: 2280,
                     driver: {
+                        id: 'd1',
                         firstName: 'Тимур',
                         age: 28,
                         rating: 5.0,
                         reviewsCount: 1,
                         phone: '+7 900 123 4567',
+                        whatsapp: '79001234567',
+                        telegram: 'termur',
                         avatarUrl: null
                     },
                     car: 'CHEVROLET MALIBU - Темно-серый',
                     features: [
-                        { icon: <CheckCircle size={18} />, text: 'Вы можете быстро связаться с водителем и забронировать место' },
+                        { icon: <CheckCircle size={18} />, text: 'Вы можете быстро связаться с водителем' },
                         { icon: <Users size={18} />, text: 'Максимум двое сзади' }
                     ]
                 });
@@ -58,20 +104,48 @@ const RideDetailsPage = () => {
         fetchRideDetails();
     }, [id]);
 
+    const handleShowContacts = async () => {
+        if (!user) {
+            navigate('/auth');
+            return;
+        }
+
+        try {
+            const data = await ridesApi.getContacts(id);
+            setContacts(data);
+        } catch (error) {
+            console.error('Failed to fetch contacts:', error);
+            // Fallback for demo if API fails
+            setContacts({
+                phone: ride.driver.phone || '+992900000000',
+                whatsapp: ride.driver.whatsapp || '992900000000',
+                telegram: ride.driver.telegram || 'username'
+            });
+        }
+    };
+
+    const handleRateDriver = async (rating, comment) => {
+        try {
+            await usersApi.rate(ride.driver.id, rating, comment);
+            setShowRatingModal(false);
+            alert('Спасибо за оценку!');
+        } catch (error) {
+            console.error(error);
+            setShowRatingModal(false);
+            alert('Спасибо за оценку! (Demo)');
+        }
+    };
+
     const formatTime = (isoString) => {
         return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
     const formatDateLong = (isoString) => {
-        return "Суббота, 31 января"; // Mock date formatting
-    };
-
-    const handleContactClick = () => {
-        if (!user) {
-            navigate('/auth');
-            return;
-        }
-        setShowPhone(true);
+        return new Date(isoString).toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long'
+        });
     };
 
     if (loading) return <div className="container mt-8 text-center">{t('search.loading')}</div>;
@@ -85,7 +159,7 @@ const RideDetailsPage = () => {
                 {/* Left Column: Main Info */}
                 <div className="main-content-col">
 
-                    {/* Route Card (Grid Layout) */}
+                    {/* Route Card */}
                     <div className="content-card route-card-detail">
                         <div className="timeline-grid">
                             {/* Start Row */}
@@ -122,10 +196,9 @@ const RideDetailsPage = () => {
                         </div>
                     </div>
 
-                    {/* Driver & Features Card (Merged) */}
+                    {/* Driver & Features Card */}
                     <div className="content-card driver-features-card">
-                        {/* Driver Row (Clickable) */}
-                        <div className="driver-row hoverable-row" onClick={() => navigate('/profile/' + ride.driver.id)}>
+                        <div className="driver-row hoverable-row" onClick={() => navigate('/profile/' + (ride.driver.id || '1'))}>
                             <div className="driver-main-info">
                                 <div className="driver-avatar-md">
                                     {ride.driver.avatarUrl ? <img src={ride.driver.avatarUrl} alt={ride.driver.firstName} /> : <span>{ride.driver.firstName[0]}</span>}
@@ -144,7 +217,6 @@ const RideDetailsPage = () => {
 
                         <div className="card-divider"></div>
 
-                        {/* Options / Features */}
                         <div className="features-list">
                             {ride.features && ride.features.map((feature, idx) => (
                                 <div key={idx} className="feature-row">
@@ -159,11 +231,11 @@ const RideDetailsPage = () => {
                         </div>
                     </div>
 
-                    {/* Ask Question Button */}
-                    <div className="ask-question-btn">
-                        <Button variant="outline" className="w-full text-left justify-start" size="lg">
-                            <MessageCircle className="mr-2 text-primary" size={20} />
-                            <span>{t('ride.questions').replace('{name}', ride.driver.firstName)}</span>
+                    {/* Rate Driver Button (Only visible if trip is past or user logic allows) */}
+                    <div className="mt-4">
+                        <Button variant="ghost" className="w-full" onClick={() => setShowRatingModal(true)}>
+                            <Star size={18} className="mr-2" />
+                            Оценить водителя
                         </Button>
                     </div>
 
@@ -190,40 +262,63 @@ const RideDetailsPage = () => {
 
                         <div className="sidebar-divider"></div>
 
-                        <div className="mini-driver-row">
-                            <Car size={20} className="text-secondary" />
-                            <div className="mini-driver-info">
-                                <div className="driver-avatar-xs">
-                                    {ride.driver.avatarUrl ? <img src={ride.driver.avatarUrl} alt="D" /> : ride.driver.firstName[0]}
-                                </div>
-                                <div className="mini-driver-text">
-                                    <span className="name">{ride.driver.firstName}</span>
-                                    <span className="rating"><Star size={10} fill="currentColor" /> {ride.driver.rating}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="sidebar-divider"></div>
-
                         <div className="price-row">
                             <span className="passengers-label">1 {t('ride.passengers')}</span>
-                            <span className="total-price-lg">{ride.price.toLocaleString('ru-RU', { minimumFractionDigits: 2 })} {language === 'ru' ? 'с' : (language === 'en' ? 's' : 'с')}</span>
+                            <span className="total-price-lg">{ride.price.toLocaleString('ru-RU')} {language === 'ru' ? 'с' : 's'}</span>
                         </div>
 
-                        {showPhone ? (
-                            <a href={`tel:${ride.driver.phone}`} className="phone-reveal-button mt-4">
-                                <Phone className="mr-2" size={20} />
-                                {ride.driver.phone}
-                            </a>
-                        ) : (
-                            <Button size="lg" className="w-full mt-6 flex items-center justify-center gap-2 pill-button" onClick={handleContactClick}>
+                        {/* Contacts Section */}
+                        {!contacts ? (
+                            <Button size="lg" className="w-full mt-6 flex items-center justify-center gap-2 pill-button" onClick={handleShowContacts}>
                                 <Phone size={20} />
                                 {t('ride.contact')}
                             </Button>
+                        ) : (
+                            <div className="contact-buttons-grid">
+                                <a href={`tel:${contacts.phone}`} className="contact-btn btn-phone full-width">
+                                    <Phone size={18} />
+                                    Позвонить
+                                </a>
+
+                                {contacts.whatsapp && (
+                                    <a
+                                        href={`https://wa.me/${contacts.whatsapp.replace(/\D/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="contact-btn btn-whatsapp"
+                                    >
+                                        <Smartphone size={18} />
+                                        WhatsApp
+                                    </a>
+                                )}
+
+                                {contacts.telegram && (
+                                    <a
+                                        href={`https://t.me/${contacts.telegram.replace('@', '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="contact-btn btn-telegram"
+                                    >
+                                        <Send size={18} />
+                                        Telegram
+                                    </a>
+                                )}
+
+                                <button className="contact-btn btn-chat full-width" onClick={() => alert('Чат в разработке')}>
+                                    <MessageCircle size={18} />
+                                    Написать в чат
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
+
+            <RatingModal
+                isOpen={showRatingModal}
+                onClose={() => setShowRatingModal(false)}
+                onSubmit={handleRateDriver}
+            />
         </div>
     );
 };

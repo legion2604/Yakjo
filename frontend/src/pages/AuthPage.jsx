@@ -36,10 +36,16 @@ const AuthPage = () => {
         try {
             await sendOtp(phone);
             setStep(2);
-            // Mock notification
-            alert(`Код подтверждения: 123456`);
+            // Mock notification for dev
+            if (window.location.hostname === 'localhost') {
+                alert(`Код подтверждения: 123456`);
+            }
         } catch (err) {
-            setError(t('auth.errorSend'));
+            if (err.message && err.message.includes('429')) {
+                setError('Слишком много попыток. Пожалуйста, подождите 5 минут.');
+            } else {
+                setError(t('auth.errorSend'));
+            }
         } finally {
             setLoading(false);
         }

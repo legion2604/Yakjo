@@ -158,9 +158,18 @@ const SearchPage = () => {
                         <h3>{t('search.sortBy')}</h3>
                     </div>
                     <div className="filter-group">
-                        <select className="filter-select">
-                            <option>{t('search.cheap')}</option>
-                            <option>{t('search.early')}</option>
+                        <select
+                            className="filter-select"
+                            value={formState.sort || 'price_asc'}
+                            onChange={(e) => {
+                                const newSort = e.target.value;
+                                setFormState({ ...formState, sort: newSort });
+                                setSearchParams({ ...formState, sort: newSort });
+                            }}
+                        >
+                            <option value="price_asc">{t('search.cheap')}</option>
+                            <option value="time_asc">{t('search.early')}</option>
+                            <option value="price_desc">Сначала дорогие</option>
                         </select>
                     </div>
 
@@ -177,16 +186,32 @@ const SearchPage = () => {
                         {searchParams.get('date') ? `${t('search.title')} - ${new Date(searchParams.get('date')).toLocaleDateString()}` : t('search.title')}
                     </h2>
 
-                    {loading ? (
+                    {loading && rides.length === 0 ? (
                         <div className="loading-state">{t('search.loading')}</div>
                     ) : (
-                        rides.map(ride => (
-                            <RideCard
-                                key={ride.id}
-                                ride={ride}
-                                onSelect={handleSelectRide}
-                            />
-                        ))
+                        <>
+                            {rides.map(ride => (
+                                <RideCard
+                                    key={ride.id}
+                                    ride={ride}
+                                    onSelect={handleSelectRide}
+                                />
+                            ))}
+
+                            {rides.length > 0 && rides.length % 10 === 0 && (
+                                <div className="flex justify-center mt-6">
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => {
+                                            const nextPage = (parseInt(searchParams.get('page') || '1')) + 1;
+                                            setSearchParams({ ...formState, page: nextPage });
+                                        }}
+                                    >
+                                        Загрузить еще
+                                    </Button>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {!loading && rides.length === 0 && (

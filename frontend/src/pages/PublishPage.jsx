@@ -28,6 +28,14 @@ const PublishPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validation: Past date
+        const selectedDate = new Date(`${formData.date}T${formData.time}`);
+        if (selectedDate < new Date()) {
+            alert('Нельзя создать поездку в прошлом времени');
+            return;
+        }
+
         setLoading(true);
         try {
             await ridesApi.create(formData);
@@ -35,9 +43,14 @@ const PublishPage = () => {
             navigate('/');
         } catch (error) {
             console.error('Failed to publish ride:', error);
-            // Fallback for demo
-            alert(t('publish.success'));
-            navigate('/');
+
+            if (error.message && error.message.includes('409')) {
+                alert('У вас уже есть поездка в это время. Выберите другое время или удалите старую поездку.');
+            } else if (error.message && error.message.includes('403')) {
+                alert('Превышен лимит активных поездок (макс. 3) или ваш аккаунт ограничен.');
+            } else {
+                alert('Ошибка при публикации: ' + (error.message || 'попробуйте позже'));
+            }
         } finally {
             setLoading(false);
         }

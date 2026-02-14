@@ -101,6 +101,18 @@ const ProfilePage = () => {
                                 <label><Car size={14} /> {t('register.carBrand')}</label>
                                 <div className="info-value">{userData.carBrand}</div>
                             </div>
+                            {user?.whatsapp && (
+                                <div className="info-item">
+                                    <label>WhatsApp</label>
+                                    <div className="info-value">{user.whatsapp}</div>
+                                </div>
+                            )}
+                            {user?.telegram && (
+                                <div className="info-item">
+                                    <label>Telegram</label>
+                                    <div className="info-value">{user.telegram}</div>
+                                </div>
+                            )}
                         </div>
 
                         {userData.bio && (
@@ -110,7 +122,14 @@ const ProfilePage = () => {
                             </div>
                         )}
 
-                        <Button variant="outline" size="sm" className="mt-6">{t('profile.edit')}</Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-6"
+                            onClick={() => navigate('/profile/edit')}
+                        >
+                            {t('profile.edit')}
+                        </Button>
                     </div>
 
                     <div className="section-card">

@@ -5,6 +5,7 @@ export const ridesApi = {
      * Поиск поездок
      */
     search: (params) => {
+        // params can include from, to, date, seats, sort, page, limit
         const queryParams = new URLSearchParams(params).toString();
         return api.get(`/rides/search?${queryParams}`);
     },
@@ -31,9 +32,9 @@ export const ridesApi = {
     },
 
     /**
-     * Бронирование места
+     * Получение контактов водителя (телефон, telegram, whatsapp)
      */
-    book: (rideId, seats) => {
-        return api.post(`/rides/${rideId}/book`, { seats });
+    getContacts: (rideId) => {
+        return api.get(`/rides/${rideId}/contacts`);
     }
 };

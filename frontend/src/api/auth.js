@@ -19,7 +19,7 @@ export const authApi = {
      * Завершение регистрации (сохранение данных пользователя)
      */
     register: (data) => {
-        // data должен содержать phone, firstName, lastName, birthDate, carBrand, email, bio
+        // data должен содержать: firstName, lastName, birthDate, gender, bio, car
         return api.post('/auth/register', data);
     },
 
@@ -35,6 +35,22 @@ export const authApi = {
      */
     getMe: () => {
         return api.get('/auth/me');
+    },
+
+    /**
+     * Обновление профиля
+     */
+    updateProfile: (data) => {
+        return api.put('/users/me', data);
+    },
+
+    /**
+     * Загрузка аватара
+     */
+    updateAvatar: (formData) => {
+        return api.post('/users/avatar', formData, {
+            headers: {} // Let browser set Content-Type for multipart
+        });
     },
 
     /**
