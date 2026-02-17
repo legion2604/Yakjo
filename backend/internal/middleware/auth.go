@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"backend/pkg/utils"
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,9 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("user_id", claims.UserID)
+		cxt, cancel := context.WithCancel(c.Request.Context())
+		defer cancel()
+		c.Request = c.Request.WithContext(cxt)
 		c.Next()
 	}
 }

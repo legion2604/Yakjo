@@ -1,4 +1,4 @@
-package controller
+package Handler
 
 import (
 	"backend/internal/middleware"
@@ -10,21 +10,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type authController struct {
+type authHandler struct {
 	s service.AuthService
 }
 
-type AuthController interface {
-	SendOTP(cxt *gin.Context)
-	VerifyOTP(cxt *gin.Context)
-	SaveUserData(cxt *gin.Context)
-	Me(cxt *gin.Context)
-	Logout(cxt *gin.Context)
-	UpdateToken(cxt *gin.Context)
+type AuthHandler interface {
+	SendOTP(c *gin.Context)
+	VerifyOTP(c *gin.Context)
+	SaveUserData(c *gin.Context)
+	Me(c *gin.Context)
+	Logout(c *gin.Context)
+	UpdateToken(c *gin.Context)
 }
 
-func NewAuthController(s service.AuthService) AuthController {
-	return &authController{s: s}
+func NewAuthHandler(s service.AuthService) AuthHandler {
+	return &authHandler{s: s}
 }
 
 // SendOTP godoc
@@ -37,19 +37,19 @@ func NewAuthController(s service.AuthService) AuthController {
 // @Success      200      {object}  map[string]string   "massage: Код отправлен"
 // @Failure      400      {object}  map[string]string   "error: текст ошибки"
 // @Router       /auth/send-otp [post]
-func (c *authController) SendOTP(cxt *gin.Context) {
+func (h *authHandler) SendOTP(c *gin.Context) {
 	var req model.PhoneRequest
-	err := cxt.ShouldBindJSON(&req)
+	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res := c.s.SendOtp(req)
+	res := h.s.SendOtp(req)
 	if res != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": res})
+		c.JSON(http.StatusBadRequest, gin.H{"error": res})
 		return
 	}
-	cxt.JSON(http.StatusOK, gin.H{"massage": "Код отправлен"})
+	c.JSON(http.StatusOK, gin.H{"massage": "Код отправлен"})
 }
 
 // VerifyOTP godoc
@@ -64,27 +64,27 @@ func (c *authController) SendOTP(cxt *gin.Context) {
 // @Failure      500      {object}  map[string]string "error: ошибка генерации токена"
 // @Header       200      {string}  Set-Cookie       "access_token=...; HttpOnly"
 // @Router       /auth/verify-otp [post]
-func (c *authController) VerifyOTP(cxt *gin.Context) {
+func (h *authHandler) VerifyOTP(c *gin.Context) {
 	var req model.VerifyOtp
-	err := cxt.ShouldBindJSON(&req)
+	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		log.Println("json valid")
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userInfo, accessToken, refreshToken, err := c.s.VarifyOtp(req)
+	userInfo, accessToken, refreshToken, err := h.s.VarifyOtp(req)
 
 	if err != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if !userInfo.IsNewUser && accessToken != "" && refreshToken != "" {
-		cxt.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
-		cxt.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
+		c.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
+		c.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
 	}
 
-	cxt.JSON(http.StatusOK, userInfo)
+	c.JSON(http.StatusOK, userInfo)
 }
 
 // SaveUserData godoc
@@ -99,23 +99,23 @@ func (c *authController) VerifyOTP(cxt *gin.Context) {
 // @Failure      500      {object}  map[string]string            "error: внутренняя ошибка сервера"
 // @Header       200      {string}  Set-Cookie                   "access_token=...; HttpOnly"
 // @Router       /auth/register [post]
-func (c *authController) SaveUserData(cxt *gin.Context) {
+func (h *authHandler) SaveUserData(c *gin.Context) {
 	var req model.RegisterUser
-	err := cxt.ShouldBindJSON(&req)
+	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	accessToken, refreshToken, err := c.s.SaveUserData(req)
+	accessToken, refreshToken, err := h.s.SaveUserData(req)
 	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	cxt.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
-	cxt.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
+	c.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
+	c.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
 
-	cxt.JSON(http.StatusOK, gin.H{"massage": "Register success!"})
+	c.JSON(http.StatusOK, gin.H{"massage": "Register success!"})
 }
 
 // Me godoc
@@ -128,14 +128,14 @@ func (c *authController) SaveUserData(cxt *gin.Context) {
 // @Failure      401  {object}  map[string]string   "error: Unauthorized (токен отсутствует или невалиден)"
 // @Failure      500  {object}  map[string]string   "error: Internal Server Error (ошибка БД или сервиса)"
 // @Router       /auth/me [get]
-func (c *authController) Me(cxt *gin.Context) {
-	userId := middleware.GetUserIDFromContext(cxt)
-	res, err := c.s.Me(userId)
+func (h *authHandler) Me(c *gin.Context) {
+	userId := middleware.GetUserIDFromContext(c)
+	res, err := h.s.Me(userId)
 	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	cxt.JSON(http.StatusOK, res)
+	c.JSON(http.StatusOK, res)
 }
 
 // Logout godoc
@@ -147,22 +147,22 @@ func (c *authController) Me(cxt *gin.Context) {
 // @Success      200  {object}  map[string]interface{} "userInfo: nil"
 // @Header       200  {string}  Set-Cookie             "access_token=; Max-Age=0"
 // @Router       /auth/logout [post]
-func (c *authController) Logout(cxt *gin.Context) {
-	cxt.SetCookie("access_token", "", -1, "/", "", false, true)
-	cxt.JSON(http.StatusOK, gin.H{"userInfo": nil})
+func (h *authHandler) Logout(c *gin.Context) {
+	c.SetCookie("access_token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"userInfo": nil})
 }
 
-func (c *authController) UpdateToken(cxt *gin.Context) {
-	refreshToken, err := cxt.Cookie("refresh_token")
+func (h *authHandler) UpdateToken(c *gin.Context) {
+	refreshToken, err := c.Cookie("refresh_token")
 	if err != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	newAccessToken, err := c.s.UpdateToken(refreshToken)
+	newAccessToken, err := h.s.UpdateToken(refreshToken)
 	if err != nil {
-		cxt.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	cxt.SetCookie("access_token", newAccessToken, 60*15, "/", "localhost", false, true)
-	cxt.JSON(http.StatusOK, gin.H{"massage": "Update success!"})
+	c.SetCookie("access_token", newAccessToken, 60*15, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, gin.H{"massage": "Update success!"})
 }

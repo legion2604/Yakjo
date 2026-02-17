@@ -343,8 +343,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "API документация проекта Yakjo сервиса для поиска попутчиков.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {

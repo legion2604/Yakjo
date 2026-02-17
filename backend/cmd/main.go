@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/internal/controller"
+	"backend/internal/handler"
 	"backend/internal/middleware"
 	"backend/internal/repository"
 	"backend/internal/route"
@@ -32,13 +32,13 @@ func main() {
 
 	authRepo := repository.NewAuthRepository(database.DB)
 	authService := service.NewAuthService(authRepo)
-	authController := controller.NewAuthController(authService)
+	authHandler := Handler.NewAuthHandler(authService)
 
 	c.Use(middleware.CORSMiddleware())
 
 	api := c.Group("/api")
 	{
-		route.NewAuthRoute(authController, api)
+		route.NewAuthRoute(authHandler, api)
 	}
 
 	c.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

@@ -1,13 +1,13 @@
 package route
 
 import (
-	"backend/internal/controller"
+	"backend/internal/handler"
 	"backend/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewAuthRoute(controller controller.AuthController, group *gin.RouterGroup) {
+func NewAuthRoute(controller Handler.AuthHandler, group *gin.RouterGroup) {
 	auth := group.Group("auth")
 	{
 		auth.POST("/send-otp", controller.SendOTP)
