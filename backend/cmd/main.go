@@ -7,7 +7,8 @@ import (
 	"backend/internal/route"
 	"backend/internal/service"
 	"backend/pkg/config"
-	"backend/pkg/database"
+	"backend/pkg/database/postgres"
+	"backend/pkg/database/redis"
 
 	_ "backend/docs"
 
@@ -26,11 +27,12 @@ import (
 // @description                Для тестирования введите в поле: access_token=ваш_токен_тут
 func main() {
 	config.LoadEnv()
-	database.InitDB()
+	postgres.ConnectDB()
+	redis.ConnectDB()
 
 	c := gin.Default()
 
-	authRepo := repository.NewAuthRepository(database.DB)
+	authRepo := repository.NewAuthRepository(postgres.DB)
 	authService := service.NewAuthService(authRepo)
 	authHandler := Handler.NewAuthHandler(authService)
 

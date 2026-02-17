@@ -1,4 +1,4 @@
-package database
+package postgres
 
 import (
 	"backend/pkg/config"
@@ -11,14 +11,14 @@ import (
 
 var DB *sql.DB
 
-func InitDB() {
+func ConnectDB() {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.GetEnv("DB_HOST"),
-		config.GetEnv("DB_PORT"),
-		config.GetEnv("DB_USER"),
-		config.GetEnv("DB_PASSWORD"),
-		config.GetEnv("DB_NAME"),
+		config.GetEnv("POSTGRESQL_DB_HOST"),
+		config.GetEnv("POSTGRESQL_DB_PORT"),
+		config.GetEnv("POSTGRESQL_DB_USER"),
+		config.GetEnv("POSTGRESQL_DB_PASSWORD"),
+		config.GetEnv("POSTGRESQL_DB_NAME"),
 	)
 	var err error
 	DB, err = sql.Open("postgres", dsn) // присваиваем глобальной переменной
