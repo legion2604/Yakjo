@@ -31,5 +31,4 @@ func ConnectDB() {
 	}
 
 	log.Println("Successfully connected to PostgresSQL!")
-	//	runMigrations(DB)
 }

@@ -3,7 +3,8 @@ package main
 import (
 	"backend/internal/handler"
 	"backend/internal/middleware"
-	"backend/internal/repository"
+	postgres2 "backend/internal/repository/postgres"
+	redis2 "backend/internal/repository/redis"
 	"backend/internal/route"
 	"backend/internal/service"
 	"backend/pkg/config"
@@ -32,8 +33,9 @@ func main() {
 
 	c := gin.Default()
 
-	authRepo := repository.NewAuthRepository(postgres.DB)
-	authService := service.NewAuthService(authRepo)
+	authPostgresRepo := postgres2.NewAuthRepository(postgres.DB)
+	authRedisRepo := redis2.NewAuthRepository(redis.Client)
+	authService := service.NewAuthService(authPostgresRepo, authRedisRepo)
 	authHandler := Handler.NewAuthHandler(authService)
 
 	c.Use(middleware.CORSMiddleware())

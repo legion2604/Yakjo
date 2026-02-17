@@ -1,12 +1,9 @@
 package utils
 
 import (
-	"fmt"
-	"math/rand"
-	"time"
+	"math/rand/v2"
 )
 
-func GenerateOTP() string {
-	rand.Seed(time.Now().UnixNano())
-	return fmt.Sprintf("%06d", rand.Intn(1_000_000))
+func GenerateOTP() int {
+	return 100_000 + rand.IntN(900_000)
 }

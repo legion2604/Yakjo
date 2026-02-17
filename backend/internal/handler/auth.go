@@ -38,15 +38,16 @@ func NewAuthHandler(s service.AuthService) AuthHandler {
 // @Failure      400      {object}  map[string]string   "error: текст ошибки"
 // @Router       /auth/send-otp [post]
 func (h *authHandler) SendOTP(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req model.PhoneRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	res := h.s.SendOtp(req)
-	if res != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": res})
+	err = h.s.SendOtp(ctx, req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"massage": "Код отправлен"})
@@ -65,6 +66,7 @@ func (h *authHandler) SendOTP(c *gin.Context) {
 // @Header       200      {string}  Set-Cookie       "access_token=...; HttpOnly"
 // @Router       /auth/verify-otp [post]
 func (h *authHandler) VerifyOTP(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req model.VerifyOtp
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
@@ -72,7 +74,7 @@ func (h *authHandler) VerifyOTP(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userInfo, accessToken, refreshToken, err := h.s.VarifyOtp(req)
+	userInfo, accessToken, refreshToken, err := h.s.VarifyOtp(ctx, req)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

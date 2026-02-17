@@ -8,18 +8,19 @@ import (
 )
 
 var ctx = context.Background()
+var Client *redis.Client
 
 func ConnectDB() {
-	rdb := redis.NewClient(&redis.Options{
+	Client = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
 
-	if err := rdb.Ping(ctx).Err(); err != nil {
+	if err := Client.Ping(ctx).Err(); err != nil {
 		log.Fatal(err)
 	}
 
-	defer rdb.Close()
+	log.Println("Connected to redis server")
 
 }
