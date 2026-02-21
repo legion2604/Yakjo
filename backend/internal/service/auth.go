@@ -2,9 +2,10 @@ package service
 
 import (
 	"backend/internal/model"
+	"backend/internal/otp"
 	"backend/internal/repository/postgres"
 	"backend/internal/repository/redis"
-	"backend/pkg/utils"
+	utils2 "backend/internal/utils"
 	"context"
 	"errors"
 	"log"
@@ -14,54 +15,28 @@ import (
 type authService struct {
 	postgres postgres.AuthRepository
 	redis    redis.AuthRepository
+	osonSms  otp.OsonSMS
 }
 
 type AuthService interface {
 	SendOtp(ctx context.Context, phone model.PhoneRequest) error
-	VarifyOtp(ctx context.Context, req model.VerifyOtp) (model.GetUserInfo, string, string, error)
+	VerifyOtp(ctx context.Context, req model.VerifyOtp) (model.GetUserInfo, string, string, error)
 	SaveUserData(user model.RegisterUser) (string, string, error)
-	Me(userId int) (model.GetUserInfo, error)
+	Me(userId int) (model.GetFullUserInfo, error)
 	UpdateToken(refreshToken string) (string, error)
 }
 
-func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository) AuthService {
-	return &authService{postgres: postgres, redis: redis}
+func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository, osonSms otp.OsonSMS) AuthService {
+	return &authService{postgres: postgres, redis: redis, osonSms: osonSms}
 }
 
 func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) error {
-	code := utils.GenerateOTP()
-	//reqBody := model.SmsRequest{
-	//	SenderID:   "Yakjo",
-	//	Recipients: []string{phone.Phone},
-	//	Message:    fmt.Sprintf("Your code is: %s", code),
-	//}
-	//log.Println("Code: ", code)
-	//
-	//bodyBytes, _ := json.Marshal(reqBody)
-	//
-	//url := config.GetEnv("msgRushUrl")
-	//
-	//req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(bodyBytes))
-	//if err != nil {
-	//	return err
-	//}
-	//apiKey := config.GetEnv("msgRushApiKey")
-	//req.Header.Set("X-API-Key", apiKey)
-	//req.Header.Set("Content-Type", "application/json")
-	//
-	//client := &http.Client{}
-	//resp, err := client.Do(req)
-	//if err != nil {
-	//	fmt.Printf("Ошибка при отправке запроса: %v\n", err)
-	//	return err
-	//}
-	//defer resp.Body.Close()
-	//
-	//body, _ := io.ReadAll(resp.Body)
-	//if resp.StatusCode != http.StatusOK {
-	//	return errors.New(string(body))
-	//}
-	//err := s.postgres.SaveOtp(phone.Phone, utils.GenerateHashFromPassword(code)) // сохраняем код в БД
+	code := utils2.GenerateOTP()
+	err := s.osonSms.SendOtp(phone.Phone, code)
+	if err != nil {
+		return err
+	}
+
 	otpSendAttempts, err := s.redis.GetOtpSendAttempts(ctx, phone.Phone)
 
 	if err != nil {
@@ -91,7 +66,7 @@ func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) err
 	return nil
 }
 
-func (s *authService) VarifyOtp(ctx context.Context, req model.VerifyOtp) (model.GetUserInfo, string, string, error) {
+func (s *authService) VerifyOtp(ctx context.Context, req model.VerifyOtp) (model.GetUserInfo, string, string, error) {
 
 	otpVerifyAttempts, err := s.redis.GetOtpVerifyAttempts(ctx, req.Phone)
 	if err != nil {
@@ -114,7 +89,7 @@ func (s *authService) VarifyOtp(ctx context.Context, req model.VerifyOtp) (model
 			return model.GetUserInfo{}, "", "", err
 		}
 		if otpSendCode != req.Code {
-			return model.GetUserInfo{}, "", "", errors.New("неверный код! Повторите пожалуйств")
+			return model.GetUserInfo{}, "", "", errors.New("incorrect password")
 		}
 
 		err = s.redis.DeleteOtpSend(ctx, req.Phone) // удаляем сам код otp
@@ -130,17 +105,16 @@ func (s *authService) VarifyOtp(ctx context.Context, req model.VerifyOtp) (model
 		return model.GetUserInfo{}, "", "", errors.New("слишком много попыток повторите позже")
 	}
 
-	//redis.deleteOTPsend
 	userInfo, err := s.postgres.GetUserInfoByPhone(req.Phone)
 	if err != nil {
 		return model.GetUserInfo{}, "", "", err
 	}
 	if userInfo.IsNewUser != true {
-		accessToken, err := utils.GenerateJwtToken(userInfo.Id, 15*time.Minute) // 15 мин для access token
+		accessToken, err := utils2.GenerateJwtToken(userInfo.Id, 15*time.Minute) // 15 мин для access token
 		if err != nil {
 			return model.GetUserInfo{}, "", "", err
 		}
-		refreshToken, err := utils.GenerateJwtToken(userInfo.Id, 90*24*time.Hour) // 90 дней для refresh token
+		refreshToken, err := utils2.GenerateJwtToken(userInfo.Id, 90*24*time.Hour) // 90 дней для refresh token
 		if err != nil {
 			return model.GetUserInfo{}, "", "", err
 		}
@@ -155,32 +129,32 @@ func (s *authService) SaveUserData(user model.RegisterUser) (string, string, err
 		log.Println(err)
 		return "", "", err
 	}
-	accessToken, err := utils.GenerateJwtToken(id, 15*time.Minute) // 15 мин для access token
+	accessToken, err := utils2.GenerateJwtToken(id, 15*time.Minute) // 15 мин для access token
 	if err != nil {
 		return "", "", err
 	}
-	refreshToken, err := utils.GenerateJwtToken(id, 90*24*time.Hour) // 90 дней для refresh token
+	refreshToken, err := utils2.GenerateJwtToken(id, 90*24*time.Hour) // 90 дней для refresh token
 	if err != nil {
 		return "", "", err
 	}
 	return accessToken, refreshToken, nil
 }
 
-func (s *authService) Me(userId int) (model.GetUserInfo, error) {
+func (s *authService) Me(userId int) (model.GetFullUserInfo, error) {
 	res, err := s.postgres.GetUserInfoById(userId)
 	if err != nil {
 		log.Println(err)
-		return model.GetUserInfo{}, err
+		return model.GetFullUserInfo{}, err
 	}
 	return res, nil
 }
 
 func (s *authService) UpdateToken(refreshToken string) (string, error) {
-	payload, err := utils.VerifyJwtToken(refreshToken)
+	payload, err := utils2.VerifyJwtToken(refreshToken)
 	if err != nil {
 		return "", err
 	}
-	newToken, err := utils.GenerateJwtToken(payload.UserID, 15*time.Minute)
+	newToken, err := utils2.GenerateJwtToken(payload.UserID, 15*time.Minute)
 	if err != nil {
 		return "", err
 	}

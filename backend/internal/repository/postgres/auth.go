@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"strconv"
 )
 
 type authRepository struct {
@@ -14,7 +15,7 @@ type authRepository struct {
 type AuthRepository interface {
 	GetUserInfoByPhone(phone string) (model.GetUserInfo, error)
 	SaveUserData(user model.RegisterUser) (int, error)
-	GetUserInfoById(userId int) (model.GetUserInfo, error)
+	GetUserInfoById(userId int) (model.GetFullUserInfo, error)
 }
 
 func NewAuthRepository(db *sql.DB) AuthRepository {
@@ -26,10 +27,10 @@ func (r *authRepository) GetUserInfoByPhone(phone string) (model.GetUserInfo, er
 	res.Phone = phone
 
 	err := r.db.QueryRow(`
-		SELECT id, first_name, avatar_url
+		SELECT id
 		FROM users
 		WHERE phone = $1
-	`, phone).Scan(&res.Id, &res.FirstName, &res.AvatarUrl)
+	`, phone).Scan(&res.Id)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		res.IsNewUser = true
@@ -55,19 +56,19 @@ func (r *authRepository) SaveUserData(user model.RegisterUser) (int, error) {
 	return id, nil
 }
 
-func (r *authRepository) GetUserInfoById(userId int) (model.GetUserInfo, error) {
-	var res model.GetUserInfo
-	res.Id = userId
+func (r *authRepository) GetUserInfoById(userId int) (model.GetFullUserInfo, error) {
+	var res model.GetFullUserInfo
+	res.Id = strconv.Itoa(userId)
 
 	err := r.db.QueryRow(`
-		SELECT phone, first_name, avatar_url
+		SELECT phone, first_name, last_name, avatar_url, rating, rides_count, telegram, whatsapp
 		FROM users
 		WHERE id = $1
-	`, userId).Scan(&res.Phone, &res.FirstName, &res.AvatarUrl)
+	`, userId).Scan(&res.Phone, &res.FirstName, &res.LastName, &res.AvatarUrl, &res.Rating, &res.RidesCount, &res.Telegram, &res.Whatsapp)
 
 	if err != nil {
 		log.Println(err)
-		return model.GetUserInfo{}, err
+		return model.GetFullUserInfo{}, err
 	}
 	return res, nil
 }

@@ -7,9 +7,7 @@ type Auth struct {
 
 type GetUserInfo struct {
 	Id        int    `json:"id"`
-	FirstName string `json:"firstName"`
 	Phone     string `json:"phone"`
-	AvatarUrl string `json:"avatarUrl"`
 	IsNewUser bool   `json:"isNewUser"`
 }
 
@@ -21,4 +19,16 @@ type RegisterUser struct {
 	CarBrand  string `json:"carBrand"`
 	Email     string `json:"email"`
 	Bio       string `json:"bio"`
+}
+
+type GetFullUserInfo struct {
+	Id         string  `json:"id"`
+	Phone      string  `json:"phone"`
+	FirstName  string  `json:"firstName"`
+	LastName   string  `json:"lastName"`
+	AvatarUrl  string  `json:"avatarUrl"`
+	Rating     float64 `json:"rating"`
+	RidesCount int     `json:"ridesCount"`
+	Whatsapp   string  `json:"whatsapp"`
+	Telegram   string  `json:"telegram"`
 }

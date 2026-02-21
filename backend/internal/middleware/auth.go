@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/pkg/utils"
+	"backend/internal/utils"
 	"context"
 	"net/http"
 

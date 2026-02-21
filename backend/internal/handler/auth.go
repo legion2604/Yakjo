@@ -47,7 +47,15 @@ func (h *authHandler) SendOTP(c *gin.Context) {
 	}
 	err = h.s.SendOtp(ctx, req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err.Error() == "слишком много попыток повторите позже" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  "error",
+				"message": err,
+				"code":    "RATE_LIMIT_EXCEEDED",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"massage": "Код отправлен"})
@@ -74,9 +82,18 @@ func (h *authHandler) VerifyOTP(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userInfo, accessToken, refreshToken, err := h.s.VarifyOtp(ctx, req)
+	userInfo, accessToken, refreshToken, err := h.s.VerifyOtp(ctx, req)
 
 	if err != nil {
+		if err.Error() == "incorrect password" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  "error",
+				"message": "Неверный код или срок действия истек",
+				"code":    "INVALID_OTP",
+			})
+			return
+		}
+
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -151,6 +168,7 @@ func (h *authHandler) Me(c *gin.Context) {
 // @Router       /auth/logout [post]
 func (h *authHandler) Logout(c *gin.Context) {
 	c.SetCookie("access_token", "", -1, "/", "", false, true)
+	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"userInfo": nil})
 }
 
