@@ -5,7 +5,7 @@ import (
 	"backend/internal/otp"
 	"backend/internal/repository/postgres"
 	"backend/internal/repository/redis"
-	utils2 "backend/internal/security"
+	"backend/internal/security"
 	"context"
 	"errors"
 	"log"
@@ -16,6 +16,7 @@ type authService struct {
 	postgres postgres.AuthRepository
 	redis    redis.AuthRepository
 	osonSms  otp.OsonSMS
+	security security.Security
 }
 
 type AuthService interface {
@@ -26,8 +27,8 @@ type AuthService interface {
 	UpdateToken(refreshToken string) (string, error)
 }
 
-func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository, osonSms otp.OsonSMS) AuthService {
-	return &authService{postgres: postgres, redis: redis, osonSms: osonSms}
+func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository, osonSms otp.OsonSMS, security security.Security) AuthService {
+	return &authService{postgres: postgres, redis: redis, osonSms: osonSms, security: security}
 }
 
 func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) error {
@@ -110,11 +111,11 @@ func (s *authService) VerifyOtp(ctx context.Context, req model.VerifyOtp) (model
 		return model.GetUserInfo{}, "", "", err
 	}
 	if userInfo.IsNewUser != true {
-		accessToken, err := utils2.GenerateJwtToken(userInfo.Id, 15*time.Minute) // 15 мин для access token
+		accessToken, err := s.security.GenerateJwtTokenAccess(userInfo.Id) // 15 мин для access token
 		if err != nil {
 			return model.GetUserInfo{}, "", "", err
 		}
-		refreshToken, err := utils2.GenerateJwtToken(userInfo.Id, 90*24*time.Hour) // 90 дней для refresh token
+		refreshToken, err := s.security.GenerateJwtTokenRefresh(userInfo.Id) // 90 дней для refresh token
 		if err != nil {
 			return model.GetUserInfo{}, "", "", err
 		}
@@ -129,11 +130,11 @@ func (s *authService) SaveUserData(user model.RegisterUser) (string, string, err
 		log.Println(err)
 		return "", "", err
 	}
-	accessToken, err := utils2.GenerateJwtToken(id, 15*time.Minute) // 15 мин для access token
+	accessToken, err := s.security.GenerateJwtTokenAccess(id) // 15 мин для access token
 	if err != nil {
 		return "", "", err
 	}
-	refreshToken, err := utils2.GenerateJwtToken(id, 90*24*time.Hour) // 90 дней для refresh token
+	refreshToken, err := s.security.GenerateJwtTokenRefresh(id) // 90 дней для refresh token
 	if err != nil {
 		return "", "", err
 	}
@@ -150,11 +151,11 @@ func (s *authService) Me(userId int) (model.GetFullUserInfo, error) {
 }
 
 func (s *authService) UpdateToken(refreshToken string) (string, error) {
-	payload, err := utils2.VerifyJwtToken(refreshToken)
+	payload, err := s.security.VerifyJwtToken(refreshToken)
 	if err != nil {
 		return "", err
 	}
-	newToken, err := utils2.GenerateJwtToken(payload.UserID, 15*time.Minute)
+	newToken, err := s.security.GenerateJwtTokenAccess(payload.UserID)
 	if err != nil {
 		return "", err
 	}

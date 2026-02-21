@@ -7,6 +7,7 @@ import (
 	postgres2 "backend/internal/repository/postgres"
 	redis2 "backend/internal/repository/redis"
 	"backend/internal/route"
+	"backend/internal/security"
 	"backend/internal/service"
 	"backend/pkg/config"
 	"backend/pkg/database/postgres"
@@ -34,10 +35,12 @@ func main() {
 
 	c := gin.Default()
 
+	newOsonSms := otp.NewOsonSMS()
+	newSecurity := security.NewSecurity()
+
 	authPostgresRepo := postgres2.NewAuthRepository(postgres.DB)
 	authRedisRepo := redis2.NewAuthRepository(redis.Client)
-	newOsonSms := otp.NewOsonSMS()
-	authService := service.NewAuthService(authPostgresRepo, authRedisRepo, newOsonSms)
+	authService := service.NewAuthService(authPostgresRepo, authRedisRepo, newOsonSms, newSecurity)
 	authHandler := Handler.NewAuthHandler(authService)
 
 	c.Use(middleware.CORSMiddleware())

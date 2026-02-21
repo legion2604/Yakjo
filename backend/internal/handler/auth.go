@@ -161,7 +161,6 @@ func (h *authHandler) Me(c *gin.Context) {
 // @Summary      Выход из системы
 // @Description  Удаляет JWT токен из Cookie (устанавливает Max-Age: -1).
 // @Tags         auth
-// @Produce      json
 // @Security     CookieAuth
 // @Success      200  {object}  map[string]interface{} "userInfo: nil"
 // @Header       200  {string}  Set-Cookie             "access_token=; Max-Age=0"
