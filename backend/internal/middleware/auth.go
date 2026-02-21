@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"backend/internal/utils"
+	"backend/internal/security"
 	"context"
 	"net/http"
 
@@ -18,7 +18,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := utils.VerifyJwtToken(token)
+		claims, err := security.VerifyJwtToken(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.Abort()

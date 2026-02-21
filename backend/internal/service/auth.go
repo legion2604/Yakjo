@@ -5,7 +5,7 @@ import (
 	"backend/internal/otp"
 	"backend/internal/repository/postgres"
 	"backend/internal/repository/redis"
-	utils2 "backend/internal/utils"
+	utils2 "backend/internal/security"
 	"context"
 	"errors"
 	"log"
@@ -31,7 +31,7 @@ func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository
 }
 
 func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) error {
-	code := utils2.GenerateOTP()
+	code := otp.GenerateOTP()
 	err := s.osonSms.SendOtp(phone.Phone, code)
 	if err != nil {
 		return err

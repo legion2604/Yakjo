@@ -1,4 +1,4 @@
-package utils
+package otp
 
 import (
 	"math/rand/v2"

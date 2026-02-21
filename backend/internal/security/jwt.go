@@ -1,4 +1,4 @@
-package utils
+package security
 
 import (
 	"backend/pkg/config"
