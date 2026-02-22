@@ -47,7 +47,7 @@ func main() {
 
 	api := c.Group("/api")
 	{
-		route.NewAuthRoute(authHandler, api)
+		route.NewAuthRoute(authHandler, api, newSecurity)
 	}
 
 	c.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

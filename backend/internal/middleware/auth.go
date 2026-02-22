@@ -10,7 +10,7 @@ import (
 
 const contextKey = "user_id"
 
-func JWTAuthMiddleware() gin.HandlerFunc {
+func JWTAuthMiddleware(security security.Security) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := c.Cookie("access_token")
 		if err != nil || token == "" {
