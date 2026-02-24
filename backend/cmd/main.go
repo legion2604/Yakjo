@@ -43,11 +43,16 @@ func main() {
 	authService := service.NewAuthService(authPostgresRepo, authRedisRepo, newOsonSms, newSecurity)
 	authHandler := Handler.NewAuthHandler(authService)
 
+	ridesPostgres := postgres2.NewRideRepository(postgres.DB)
+	ridesService := service.NewRideService(ridesPostgres)
+	ridesHandler := Handler.NewRidesHandler(ridesService)
+
 	c.Use(middleware.CORSMiddleware())
 
 	api := c.Group("/api")
 	{
 		route.NewAuthRoute(authHandler, api, newSecurity)
+		route.NewRidesRoute(ridesHandler, api, newSecurity)
 	}
 
 	c.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
