@@ -78,7 +78,7 @@
   ```json
   {
     "user": {
-    "id": "user-uuid",
+    "id": 1,
     "phone": "+992900000000",
     "isNewUser": true // Флаг: если true -> редирект на /register
   }
@@ -115,7 +115,7 @@
 **Success Response (200 OK):**
 ```json
 {
-  "id": "user-uuid",
+  "id": 1,
   "firstName": "Тимур",
   "lastName": "Алиев",
   "isNewUser": false
@@ -136,7 +136,7 @@
 **Success Response (200 OK):**
 ```json
 {
-  "id": "user-uuid",
+  "id": 1,
   "phone": "+992900000000",
   "firstName": "Тимур",
   "lastName": "Алиев",
@@ -186,14 +186,14 @@
 {
   "data": [
     {
-      "id": "ride-uuid",
+      "id": 1,
       "from": "Душанбе",
       "to": "Худжанд",
       "price": 120,
       "departureTime": "2024-02-25T08:00:00Z", // UTC (ISO 8601)
       "availableSeats": 3,
       "driver": {
-        "id": "driver-uuid",
+        "id": 2,
         "firstName": "Алишер",
         "rating": 4.8,
         "avatarUrl": "..."
@@ -221,7 +221,7 @@
 **Success Response (200 OK):**
 ```json
 {
-  "id": "ride-uuid",
+  "id": 1,
   "from": "Душанбе",
   "to": "Худжанд",
   "description": "Еду аккуратно, могу забрать с Водонасосной",
@@ -230,7 +230,7 @@
   "availableSeats": 3,
   "departureTime": "2024-02-25T08:00:00Z",
   "driver": {
-    "id": "driver-uuid",
+    "id": 2,
     "firstName": "Алишер",
     "lastName": "Валиев",
     "rating": 4.8,
@@ -278,7 +278,7 @@
 **Success Response (201 Created):**
 ```json
 {
-  "id": "new-ride-uuid",
+  "id": 1,
   "status": "created"
 }
 ```
@@ -301,14 +301,14 @@
 **Success Response (200 OK):**
 ```json
 {
-  "id": "user-uuid",
+  "id": 1,
   "firstName": "Алишер",
   "createdAt": "2023-10-10",
   "rating": 4.8,
   "reviewCount": 12,
   "reviews": [ // Может быть пустым массивом []
     {
-      "id": "review-1",
+      "id": 10,
       "author": "Мадина",
       "rating": 5,
       "comment": "Отличный водитель, доехали быстро!",
@@ -372,7 +372,7 @@
 #### User (Short)
 ```json
 {
-  "id": "uuid",
+  "id": "int",
   "firstName": "string",
   "lastName": "string",
   "avatarUrl": "string | null",
@@ -383,9 +383,9 @@
 #### Message
 ```json
 {
-  "id": "uuid",
-  "chatId": "uuid",
-  "senderId": "uuid",
+  "id": "int",
+  "chatId": "int",
+  "senderId": "int",
   "content": "string",
   "createdAt": "ISO8601",
   "isRead": "boolean"
@@ -395,7 +395,7 @@
 #### Chat
 ```json
 {
-  "id": "uuid",
+  "id": "int",
   "partner": { "User" },
   "lastMessage": { "Message" },
   "unreadCount": "int"
@@ -421,7 +421,7 @@
 ```json
 {
   "type": "get_history",
-  "chatId": "550e8400-e29b-41d4-a716-446655440000",
+  "chatId": 1,
   "limit": 50,  // (Optional) Max 100
   "offset": 0   // (Optional) Сдвиг для подгрузки старых сообщений
 }
@@ -432,7 +432,7 @@
 ```json
 {
   "type": "start_chat",
-  "userId": "uuid-driver-id" // ID пользователя, с которым хотим общаться
+  "userId": 2 // ID пользователя, с которым хотим общаться
 }
 ```
 
@@ -440,7 +440,7 @@
 ```json
 {
   "type": "send_message",
-  "chatId": "550e8400-e29b-41d4-a716-446655440000",
+  "chatId": 1,
   "text": "Привет! Где вы находитесь?" // Максимум 4096 символов
 }
 ```
@@ -450,8 +450,8 @@
 ```json
 {
   "type": "read_messages",
-  "chatId": "550e8400-e29b-41d4-a716-446655440000",
-  "messageIds": ["uuid1", "uuid2"] // Или просто chatId, чтобы пометить все как прочитанные
+  "chatId": 1,
+  "messageIds": [1, 2] // Или просто chatId, чтобы пометить все как прочитанные
 }
 ```
 
@@ -480,9 +480,9 @@
   "type": "chats_list",
   "data": [
     {
-      "id": "chat-uuid-1",
+      "id": 1,
       "partner": {
-        "id": "partner-uuid",
+        "id": 2,
         "firstName": "Алишер",
         "avatarUrl": "/uploads/avatar1.jpg"
       },
@@ -501,11 +501,11 @@
 ```json
 {
   "type": "chat_history",
-  "chatId": "chat-uuid-1",
+  "chatId": 1,
   "data": [
     {
-      "id": "msg-uuid-10",
-      "senderId": "partner-uuid",
+      "id": 10,
+      "senderId": 2,
       "content": "Привет!",
       "createdAt": "2024-02-21T10:00:00Z",
       "isRead": true
@@ -521,7 +521,7 @@
 {
   "type": "chat_opened",
   "chat": {
-    "id": "chat-uuid-new",
+    "id": 1,
     "partner": { ... } // Данные собеседника
   }
 }
@@ -532,10 +532,10 @@
 ```json
 {
   "type": "new_message",
-  "chatId": "chat-uuid-1",
+  "chatId": 1,
   "message": {
-    "id": "msg-uuid-11",
-    "senderId": "partner-uuid",
+    "id": 11,
+    "senderId": 2,
     "content": "Я подъехал",
     "createdAt": "2024-02-21T10:10:00Z"
   }

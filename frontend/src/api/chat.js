@@ -14,21 +14,21 @@ export const chatApi = {
      * Ответ придет с типом 'chat_history'
      */
     getMessages: (chatId, limit = 50, offset = 0) => {
-        wsClient.send({ type: 'get_history', chatId, limit, offset });
+        wsClient.send({ type: 'get_history', chatId: Number(chatId), limit, offset });
     },
 
     /**
      * Отправить сообщение
      */
     sendMessage: (chatId, text) => {
-        wsClient.send({ type: 'send_message', chatId, text });
+        wsClient.send({ type: 'send_message', chatId: Number(chatId), text });
     },
 
     /**
      * Пометить сообщения как прочитанные
      */
     readMessages: (chatId, messageIds = []) => {
-        wsClient.send({ type: 'read_messages', chatId, messageIds });
+        wsClient.send({ type: 'read_messages', chatId: Number(chatId), messageIds: messageIds.map(Number) });
     },
 
     /**
@@ -36,7 +36,7 @@ export const chatApi = {
      * Ответ придет с типом 'chat_started'
      */
     startChat: (userId) => {
-        wsClient.send({ type: 'start_chat', userId });
+        wsClient.send({ type: 'start_chat', userId: Number(userId) });
     },
 
     /**

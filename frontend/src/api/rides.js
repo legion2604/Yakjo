@@ -14,7 +14,7 @@ export const ridesApi = {
      * Получение деталей конкретной поездки
      */
     getById: (id) => {
-        return api.get(`/rides/${id}`);
+        return api.get(`/rides/${Number(id)}`);
     },
 
     /**
@@ -35,6 +35,6 @@ export const ridesApi = {
      * Получение контактов водителя (телефон, telegram, whatsapp)
      */
     getContacts: (rideId) => {
-        return api.get(`/rides/${rideId}/contacts`);
+        return api.get(`/rides/${Number(rideId)}/contacts`);
     }
 };
