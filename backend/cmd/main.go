@@ -45,7 +45,7 @@ func main() {
 
 	ridesPostgres := postgres2.NewRideRepository(postgres.DB)
 	ridesService := service.NewRideService(ridesPostgres)
-	ridesHandler := Handler.NewRidesHandler(ridesService)
+	ridesHandler := Handler.NewRidesHandler(ridesService, newSecurity)
 
 	c.Use(middleware.CORSMiddleware())
 
