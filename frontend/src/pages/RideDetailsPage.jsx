@@ -70,7 +70,7 @@ const RideDetailsPage = () => {
                 console.error('Failed to fetch ride details:', error);
                 // Fallback mock data
                 setRide({
-                    id: '1',
+                    id: 1,
                     from: 'Москва',
                     fromAddress: 'Ул. Павла Корчагина, 14',
                     to: 'Кудрово',
@@ -80,7 +80,7 @@ const RideDetailsPage = () => {
                     duration: '7ч 20',
                     price: 2280,
                     driver: {
-                        id: 'd1',
+                        id: 1,
                         firstName: 'Тимур',
                         age: 28,
                         rating: 5.0,
