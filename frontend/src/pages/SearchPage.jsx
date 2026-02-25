@@ -11,7 +11,7 @@ import './HomePage.css';
 // Fallback Mock Data for UI stability if API fails
 const MOCK_RIDES = [
     {
-        id: '1',
+        id: 1,
         from: 'Душанбе',
         to: 'Худжанд',
         departureTime: '2024-02-21T08:00:00',
@@ -23,7 +23,7 @@ const MOCK_RIDES = [
         car: 'Toyota Camry'
     },
     {
-        id: '2',
+        id: 2,
         from: 'Душанбе',
         to: 'Худжанд',
         departureTime: '2024-02-21T09:30:00',
