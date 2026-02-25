@@ -10,7 +10,7 @@ type Ride struct {
 	DepartureTime  time.Time `json:"departureTime"`
 	AvailableSeats int       `json:"availableSeats"`
 	Driver         struct {
-		Id        string  `json:"id"`
+		Id        int     `json:"id"`
 		FirstName string  `json:"firstName"`
 		Rating    float64 `json:"rating"`
 		AvatarUrl string  `json:"avatarUrl"`

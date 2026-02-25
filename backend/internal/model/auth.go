@@ -22,7 +22,7 @@ type RegisterUser struct {
 }
 
 type GetFullUserInfo struct {
-	Id         string  `json:"id"`
+	Id         int     `json:"id"`
 	Phone      string  `json:"phone"`
 	FirstName  string  `json:"firstName"`
 	LastName   string  `json:"lastName"`

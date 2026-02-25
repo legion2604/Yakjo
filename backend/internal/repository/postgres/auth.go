@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"log"
-	"strconv"
 )
 
 type authRepository struct {
@@ -58,7 +57,7 @@ func (r *authRepository) SaveUserData(user model.RegisterUser) (int, error) {
 
 func (r *authRepository) GetUserInfoById(userId int) (model.GetFullUserInfo, error) {
 	var res model.GetFullUserInfo
-	res.Id = strconv.Itoa(userId)
+	res.Id = userId
 
 	err := r.db.QueryRow(`
 		SELECT phone, first_name, last_name, avatar_url, rating, rides_count, telegram, whatsapp
