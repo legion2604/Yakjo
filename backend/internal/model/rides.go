@@ -48,3 +48,9 @@ type FullInfoRide struct {
 		} `json:"contacts"`
 	} `json:"driver"`
 }
+
+type RideContacts struct {
+	Phone    string `json:"phone"`
+	Whatsapp string `json:"whatsapp"`
+	Telegram string `json:"telegram"`
+}

@@ -58,7 +58,10 @@ func (h *authHandler) SendOTP(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"massage": "Код отправлен"})
+	c.JSON(http.StatusOK, gin.H{
+		"message":   "Код отправлен успешно",
+		"expiresIn": 120, // Время жизни кода в секундах
+	})
 }
 
 // VerifyOTP godoc
@@ -173,7 +176,7 @@ func (h *authHandler) Logout(c *gin.Context) {
 
 func (h *authHandler) UpdateToken(c *gin.Context) {
 	refreshToken, err := c.Cookie("refresh_token")
-	if err != nil {
+	if err != nil || refreshToken == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

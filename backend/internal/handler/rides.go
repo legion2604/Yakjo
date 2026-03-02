@@ -17,6 +17,7 @@ type ridesHandler struct {
 type RidesHandler interface {
 	GetRides(ctx *gin.Context)
 	GetRideById(ctx *gin.Context)
+	GetRideContacts(ctx *gin.Context)
 }
 
 func NewRidesHandler(s service.RideService, security security.Security) RidesHandler {
@@ -56,6 +57,20 @@ func (h *ridesHandler) GetRideById(ctx *gin.Context) {
 	token, errT := ctx.Cookie("access_token")
 	if _, err := h.security.VerifyJwtToken(token); err != nil || errT != nil {
 		res.Driver.Contacts.Hidden = true
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *ridesHandler) GetRideContacts(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.s.GetRideContacts(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	ctx.JSON(http.StatusOK, res)
 }

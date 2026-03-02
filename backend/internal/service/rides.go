@@ -13,6 +13,7 @@ type ridesService struct {
 type RideService interface {
 	GetRides(req model.RidesRequest) ([]model.Ride, int, error)
 	GetRideFullInfoById(id int) (model.FullInfoRide, error)
+	GetRideContacts(id int) (model.RideContacts, error)
 }
 
 func NewRideService(postgres postgres.RideRepository) RideService {
@@ -20,7 +21,7 @@ func NewRideService(postgres postgres.RideRepository) RideService {
 }
 
 func (s *ridesService) GetRides(req model.RidesRequest) ([]model.Ride, int, error) {
-	parsed, err := time.Parse("2006-01-02", req.Date)
+	parsed, err := time.Parse("2026-28-02", req.Date)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -44,6 +45,14 @@ func (s *ridesService) GetRideFullInfoById(id int) (model.FullInfoRide, error) {
 	res, err := s.postgres.GetRideFullInfoById(id)
 	if err != nil {
 		return model.FullInfoRide{}, err
+	}
+	return res, nil
+}
+
+func (s *ridesService) GetRideContacts(id int) (model.RideContacts, error) {
+	res, err := s.postgres.GetRideContacts(id)
+	if err != nil {
+		return model.RideContacts{}, err
 	}
 	return res, nil
 }

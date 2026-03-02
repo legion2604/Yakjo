@@ -14,6 +14,7 @@ type RideRepository interface {
 	GetRides(from, to string, dateStart, dateEnd time.Time, seats int, sort string, limit, offset int) ([]model.Ride, error)
 	GetRidesCount(from, to string, dateStart, dateEnd time.Time, seats int) (int, error)
 	GetRideFullInfoById(id int) (model.FullInfoRide, error)
+	GetRideContacts(id int) (model.RideContacts, error)
 }
 
 func NewRideRepository(db *sql.DB) RideRepository {
@@ -95,27 +96,15 @@ func (r *rideRepository) GetRideFullInfoById(id int) (model.FullInfoRide, error)
 	return fullInfo, nil
 }
 
-/*
-	{
-	  "id": "ride-uuid",
-	  "from": "Душанбе",
-	  "to": "Худжанд",
-	  "description": "Еду аккуратно, могу забрать с Водонасосной",
-	  "price": 120,
-	  "totalSeats": 4,
-	  "availableSeats": 3,
-	  "departureTime": "2024-02-25T08:00:00Z",
-	  "driver": {
-	    "id": "driver-uuid",
-	    "firstName": "Алишер",
-	    "lastName": "Валиев",
-	    "rating": 4.8,
-	    "contacts": { // Объект или null (если не авторизован)
-	       "hidden": true // Флаг для фронта, чтобы показать "Войдите, чтобы увидеть"
-	    }
-	  }
+func (r *rideRepository) GetRideContacts(id int) (model.RideContacts, error) {
+	var contacts model.RideContacts
+	err := r.db.QueryRow("SELECT u.phone, u.telegram, u.whatsapp FROM users u JOIN rides r ON r.id=$1", id).Scan(&contacts.Phone, &contacts.Telegram, &contacts.Whatsapp)
+	if err != nil {
+		return model.RideContacts{}, err
 	}
-*/
+	return contacts, nil
+}
+
 func getOrderBy(sort string) string {
 	switch sort {
 	case "price_asc":

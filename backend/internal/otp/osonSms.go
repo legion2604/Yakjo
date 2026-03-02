@@ -39,6 +39,7 @@ func (o *osonSMS) SendOtp(phone string, otp int) error {
 		phone,
 		token,
 	)
+
 	hash := sha256.Sum256([]byte(data))
 	strHash := hex.EncodeToString(hash[:])
 

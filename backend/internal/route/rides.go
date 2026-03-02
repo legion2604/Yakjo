@@ -12,5 +12,6 @@ func NewRidesRoute(controller Handler.RidesHandler, group *gin.RouterGroup, secu
 	{
 		rides.GET("/search", controller.GetRides)
 		rides.GET("/:id", controller.GetRideById)
+		rides.GET("/:id/contacts", controller.GetRideContacts)
 	}
 }
