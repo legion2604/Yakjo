@@ -54,3 +54,12 @@ type RideContacts struct {
 	Whatsapp string `json:"whatsapp"`
 	Telegram string `json:"telegram"`
 }
+
+type RideForm struct {
+	From          string    `json:"from"`
+	To            string    `json:"to"`
+	DepartureTime time.Time `json:"departureTime"`
+	Price         int       `json:"price"`
+	TotalSeats    int       `json:"totalSeats"`
+	Description   string    `json:"description"`
+}

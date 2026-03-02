@@ -33,10 +33,11 @@ func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository
 
 func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) error {
 	code := otp.GenerateOTP()
-	err := s.osonSms.SendOtp(phone.Phone, code)
-	if err != nil {
-		return err
-	}
+	log.Println("OTP code:", code)
+	//err := s.osonSms.SendOtp(phone.Phone, code)
+	//if err != nil {
+	//	return err
+	//}
 
 	otpSendAttempts, err := s.redis.GetOtpSendAttempts(ctx, phone.Phone)
 

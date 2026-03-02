@@ -2,6 +2,7 @@ package route
 
 import (
 	"backend/internal/handler"
+	"backend/internal/middleware"
 	"backend/internal/security"
 
 	"github.com/gin-gonic/gin"
@@ -13,5 +14,6 @@ func NewRidesRoute(controller Handler.RidesHandler, group *gin.RouterGroup, secu
 		rides.GET("/search", controller.GetRides)
 		rides.GET("/:id", controller.GetRideById)
 		rides.GET("/:id/contacts", controller.GetRideContacts)
+		rides.POST("/", middleware.JWTAuthMiddleware(security), controller.CreateRide)
 	}
 }

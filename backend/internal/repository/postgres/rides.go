@@ -15,6 +15,7 @@ type RideRepository interface {
 	GetRidesCount(from, to string, dateStart, dateEnd time.Time, seats int) (int, error)
 	GetRideFullInfoById(id int) (model.FullInfoRide, error)
 	GetRideContacts(id int) (model.RideContacts, error)
+	CreateRide(driverId int, ride model.RideForm) (int, error)
 }
 
 func NewRideRepository(db *sql.DB) RideRepository {
@@ -103,6 +104,15 @@ func (r *rideRepository) GetRideContacts(id int) (model.RideContacts, error) {
 		return model.RideContacts{}, err
 	}
 	return contacts, nil
+}
+
+func (r *rideRepository) CreateRide(driverId int, ride model.RideForm) (int, error) {
+	var id int
+	err := r.db.QueryRow("INSERT INTO rides (from_city, to_city,price, departure_time,available_seats,description,driver_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", ride.From, ride.To, ride.Price, ride.DepartureTime, ride.TotalSeats, ride.Description, driverId).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func getOrderBy(sort string) string {

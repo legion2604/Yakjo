@@ -3,6 +3,7 @@ package service
 import (
 	"backend/internal/model"
 	"backend/internal/repository/postgres"
+	"errors"
 	"time"
 )
 
@@ -14,6 +15,7 @@ type RideService interface {
 	GetRides(req model.RidesRequest) ([]model.Ride, int, error)
 	GetRideFullInfoById(id int) (model.FullInfoRide, error)
 	GetRideContacts(id int) (model.RideContacts, error)
+	CreateRide(driverId int, ride model.RideForm) (int, error)
 }
 
 func NewRideService(postgres postgres.RideRepository) RideService {
@@ -55,4 +57,15 @@ func (s *ridesService) GetRideContacts(id int) (model.RideContacts, error) {
 		return model.RideContacts{}, err
 	}
 	return res, nil
+}
+
+func (s *ridesService) CreateRide(driverId int, ride model.RideForm) (int, error) {
+	if ride.TotalSeats < 1 || ride.DepartureTime.Before(time.Now()) {
+		return 0, errors.New("validation error (seats < 1, past date)")
+	}
+	id, err := s.postgres.CreateRide(driverId, ride)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }

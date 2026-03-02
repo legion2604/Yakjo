@@ -1,9 +1,11 @@
 package Handler
 
 import (
+	"backend/internal/middleware"
 	"backend/internal/model"
 	"backend/internal/security"
 	"backend/internal/service"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -18,6 +20,7 @@ type RidesHandler interface {
 	GetRides(ctx *gin.Context)
 	GetRideById(ctx *gin.Context)
 	GetRideContacts(ctx *gin.Context)
+	CreateRide(ctx *gin.Context)
 }
 
 func NewRidesHandler(s service.RideService, security security.Security) RidesHandler {
@@ -73,4 +76,22 @@ func (h *ridesHandler) GetRideContacts(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *ridesHandler) CreateRide(ctx *gin.Context) {
+	var req model.RideForm
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	driverId := middleware.GetUserIDFromContext(ctx)
+	log.Println(driverId)
+	id, err := h.s.CreateRide(driverId, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{
+		"id":     id,
+		"status": "created",
+	})
 }
