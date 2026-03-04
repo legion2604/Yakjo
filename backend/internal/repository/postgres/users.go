@@ -12,6 +12,7 @@ type userRepository struct {
 type UsersRepository interface {
 	GetUserById(id int) (model.User, error)
 	GetReviewsByUserId(userId int) ([]model.Review, error)
+	ChangeUserInfo(userId int, data model.NewUserData) error
 }
 
 func NewUsersRepository(db *sql.DB) UsersRepository {
@@ -45,11 +46,19 @@ func (r *userRepository) GetReviewsByUserId(userId int) ([]model.Review, error) 
 	return reviews, nil
 }
 
-/*
-	Id      int    `json:"id"`
-	Author  string `json:"author"`
-	Rating  int    `json:"rating"`
-	Comment string `json:"comment"`
-	Date    string `json:"date"`
+func (r *userRepository) ChangeUserInfo(userId int, data model.NewUserData) error {
+	_, err := r.db.Exec("UPDATE users SET first_name=$1, bio=$2, whatsapp=$3, telegram=$4 WHERE id=$5", data.FirstName, data.Bio, data.Whatsapp, data.Telegram, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
+/*
+{
+  "firstName": "Тимур",      // Min 2 chars
+  "bio": "О себе...",        // Max 500 chars
+  "whatsapp": "992933333333", // Min 9 digits
+  "telegram": "username"     // Without @
+}
 */

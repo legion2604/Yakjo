@@ -72,11 +72,9 @@ func (s *authService) VerifyOtp(ctx context.Context, req model.VerifyOtp) (model
 
 	otpVerifyAttempts, err := s.redis.GetOtpVerifyAttempts(ctx, req.Phone)
 	if err != nil {
-		// Если это ошибка "ключа нет", мы её игнорируем и считаем попытки = 0
 		if err.Error() == "redis: nil" {
 			otpVerifyAttempts = 0
 		} else {
-			// Если это ошибка сети или базы — возвращаем её
 			return model.GetUserInfo{}, "", "", err
 		}
 	}

@@ -16,3 +16,10 @@ type Review struct {
 	Comment string `json:"comment"`
 	Date    string `json:"date"`
 }
+
+type NewUserData struct {
+	FirstName string `json:"firstName"`
+	Bio       string `json:"bio"`
+	Whatsapp  string `json:"whatsapp"`
+	Telegram  string `json:"telegram"`
+}

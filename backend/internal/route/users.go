@@ -12,5 +12,6 @@ func NewUsersRoute(controller Handler.UsersHandler, group *gin.RouterGroup, secu
 	users := group.Group("users")
 	{
 		users.GET("/:id", middleware.JWTAuthMiddleware(security), controller.GetUserById)
+		users.PUT("/me", middleware.JWTAuthMiddleware(security), controller.ChangeUserInfo)
 	}
 }
