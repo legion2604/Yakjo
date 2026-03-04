@@ -23,7 +23,9 @@ func NewRideService(postgres postgres.RideRepository) RideService {
 }
 
 func (s *ridesService) GetRides(req model.RidesRequest) ([]model.Ride, int, error) {
-	parsed, err := time.Parse("2026-28-02", req.Date)
+	layout := "2006-01-02"
+
+	parsed, err := time.Parse(layout, req.Date)
 	if err != nil {
 		return nil, 0, err
 	}
