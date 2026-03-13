@@ -17,6 +17,11 @@ type Review struct {
 	Date    string `json:"date"`
 }
 
+type NewReview struct {
+	Rating  int    `json:"rating"`
+	Comment string `json:"comment"`
+}
+
 type NewUserData struct {
 	FirstName string `json:"firstName"`
 	Bio       string `json:"bio"`

@@ -13,6 +13,9 @@ type UsersRepository interface {
 	GetUserById(id int) (model.User, error)
 	GetReviewsByUserId(userId int) ([]model.Review, error)
 	ChangeUserInfo(userId int, data model.NewUserData) error
+	AddReview(driverId, authorId int, review model.NewReview) error
+	ChangeRating(driverId int, newRating float64) error
+	GetRatingSum(driverId int) (float64, int, error)
 }
 
 func NewUsersRepository(db *sql.DB) UsersRepository {
@@ -54,11 +57,28 @@ func (r *userRepository) ChangeUserInfo(userId int, data model.NewUserData) erro
 	return nil
 }
 
-/*
-{
-  "firstName": "Тимур",      // Min 2 chars
-  "bio": "О себе...",        // Max 500 chars
-  "whatsapp": "992933333333", // Min 9 digits
-  "telegram": "username"     // Without @
+func (r *userRepository) AddReview(driverId, authorId int, review model.NewReview) error {
+	_, err := r.db.Exec("INSERT INTO reviews (author_id, author_name, rating, comment, driver_id) SELECT $1, first_name, $2, $3, $4 FROM users WHERE id=$1", authorId, review.Rating, review.Comment, driverId)
+	if err != nil {
+		return err
+	}
+	return nil
 }
-*/
+
+func (r *userRepository) ChangeRating(driverId int, newRating float64) error {
+	_, err := r.db.Exec("UPDATE users SET rating=$1 WHERE id=$2", newRating, driverId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *userRepository) GetRatingSum(driverId int) (float64, int, error) {
+	var sum float64
+	var count int
+	err := r.db.QueryRow("SELECT SUM(rating) AS total_rating_sum, COUNT(rating) AS total_reviews_count FROM reviews WHERE driver_id = $1;", driverId).Scan(&sum, &count)
+	if err != nil {
+		return 0, 0, err
+	}
+	return sum, count, nil
+}

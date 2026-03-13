@@ -17,6 +17,7 @@ type usersHandler struct {
 type UsersHandler interface {
 	GetUserById(c *gin.Context)
 	ChangeUserInfo(c *gin.Context)
+	AddReview(с *gin.Context)
 }
 
 func NewUsersHandler(s service.UsersService, security security.Security) UsersHandler {
@@ -51,4 +52,33 @@ func (h *usersHandler) ChangeUserInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"message": "user updated"})
+}
+
+func (h *usersHandler) AddReview(c *gin.Context) {
+	driverId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	authorId := middleware.GetUserIDFromContext(c)
+
+	var req model.NewReview
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if driverId == authorId {
+		c.JSON(400, gin.H{"error": "you can't add yourself"})
+		return
+	}
+
+	err = h.s.AddReview(driverId, authorId, req)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Rating submitted"})
 }
