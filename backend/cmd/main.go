@@ -51,6 +51,10 @@ func main() {
 	usersService := service.NewUsersService(usersPostgres)
 	usersHandler := Handler.NewUsersHandler(usersService, newSecurity)
 
+	chatPostgres := postgres2.NewChatRepository(postgres.DB)
+	chatService := service.NewChatService(chatPostgres)
+	chatHandler := Handler.NewChatHandler(chatService)
+
 	c.Use(middleware.CORSMiddleware())
 
 	api := c.Group("/api")
@@ -58,6 +62,8 @@ func main() {
 		route.NewAuthRoute(authHandler, api, newSecurity)
 		route.NewRidesRoute(ridesHandler, api, newSecurity)
 		route.NewUsersRoute(usersHandler, api, newSecurity)
+		route.NewChatRoute(chatHandler, api, newSecurity)
+
 	}
 
 	c.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

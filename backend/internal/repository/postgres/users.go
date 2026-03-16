@@ -58,7 +58,7 @@ func (r *userRepository) ChangeUserInfo(userId int, data model.NewUserData) erro
 }
 
 func (r *userRepository) AddReview(driverId, authorId int, review model.NewReview) error {
-	_, err := r.db.Exec("INSERT INTO reviews (author_id, author_name, rating, comment, driver_id) SELECT $1, first_name, $2, $3, $4 FROM users WHERE id=$1", authorId, review.Rating, review.Comment, driverId)
+	_, err := r.db.Exec("INSERT INTO reviews (author_id, author_name, rating, comment, driver_id) (SELECT $1, first_name, $2, $3, $4 FROM users WHERE id=$1)", authorId, review.Rating, review.Comment, driverId)
 	if err != nil {
 		return err
 	}
