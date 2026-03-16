@@ -11,6 +11,7 @@ import RideDetailsPage from './pages/RideDetailsPage';
 import PublishPage from './pages/PublishPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
+import VerifyOtpPage from './pages/VerifyOtpPage';
 import RegisterPage from './pages/RegisterPage';
 import EditProfilePage from './pages/EditProfilePage';
 import AboutPage from './pages/AboutPage';
@@ -57,6 +58,7 @@ function App() {
                   }
                 />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/verify-otp" element={<VerifyOtpPage />} />
                 <Route path="/register" element={<RegisterPage />} />
               </Routes>
             </main>
