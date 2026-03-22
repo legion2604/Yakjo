@@ -95,15 +95,6 @@ func (s *chatService) StartChat(data []byte, userId int, conn *websocket.Conn) (
 	// Используем defer, чтобы мьютекс разблокировался в любом случае
 	defer roomsMu.Unlock()
 
-	// Проверка на дубликат соединения
-	for _, c := range rooms[roomId] {
-		if c == conn {
-			return roomId, nil, nil
-		}
-	}
-
-	rooms[roomId] = append(rooms[roomId], conn)
-
 	chat, err := s.postgres.GetPartnerInfo(payload.UserId, userId)
 	if err != nil {
 		return roomId, nil, err
@@ -116,5 +107,15 @@ func (s *chatService) StartChat(data []byte, userId int, conn *websocket.Conn) (
 
 	jsonData, err := json.Marshal(response)
 	log.Println(rooms)
+
+	// Проверка на дубликат соединения
+	for _, c := range rooms[roomId] {
+		if c == conn {
+			return roomId, jsonData, nil
+		}
+	}
+
+	rooms[roomId] = append(rooms[roomId], conn)
+
 	return roomId, jsonData, nil
 }
