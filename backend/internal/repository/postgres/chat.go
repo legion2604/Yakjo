@@ -3,6 +3,7 @@ package postgres
 import (
 	"backend/internal/model"
 	"database/sql"
+	"log"
 )
 
 type chatRepository struct {
@@ -11,6 +12,9 @@ type chatRepository struct {
 
 type ChatRepository interface {
 	GetChats(userId int) ([]model.Chat, error)
+	FindRoom(userId, companionId int) (int, error)
+	CreateRoom(userId, companionId int) (int, error)
+	GetPartnerInfo(companionId, chatId int) (model.Chat, error)
 }
 
 func NewChatRepository(db *sql.DB) ChatRepository {
@@ -74,4 +78,78 @@ func (r *chatRepository) GetChats(userId int) ([]model.Chat, error) {
 		chats = append(chats, item)
 	}
 	return chats, nil
+}
+
+func (r *chatRepository) FindRoom(userId, companionId int) (int, error) {
+	var roomId int
+
+	err := r.db.QueryRow("SELECT id FROM chats WHERE (first_user_id=$1 AND second_user_id=$2) or (first_user_id=$2 AND second_user_id=$1)", userId, companionId).Scan(&roomId)
+	if err != nil {
+		return 0, err
+	}
+	log.Println(roomId)
+	return roomId, nil
+}
+
+func (r *chatRepository) CreateRoom(userId, companionId int) (int, error) {
+	var roomId int
+	err := r.db.QueryRow(
+		"INSERT INTO chats (first_user_id, second_user_id) VALUES ($1, $2) RETURNING id",
+		userId,
+		companionId,
+	).Scan(&roomId)
+	if err != nil {
+		return 0, nil
+	}
+	log.Println(roomId)
+	return roomId, nil
+}
+
+func (r *chatRepository) GetPartnerInfo(companionId, chatId int) (model.Chat, error) {
+	var chatInfo model.Chat
+	err := r.db.QueryRow(`
+    SELECT 
+        u.first_name,
+        u.last_name,
+        u.avatar_url,
+        COALESCE(m.id, 0),
+        COALESCE(m.sender_id, 0),
+        COALESCE(m.content, ''),
+        COALESCE(m.created_at, NOW()),
+        COALESCE(m.is_read, true),
+        COALESCE(unread.unread_count, 0)
+    FROM users u
+    LEFT JOIN LATERAL (
+        SELECT id, sender_id, content, created_at, is_read
+        FROM messages
+        WHERE chat_id = $2
+        ORDER BY created_at DESC
+        LIMIT 1
+    ) m ON true
+    LEFT JOIN (
+        SELECT COUNT(*) AS unread_count
+        FROM messages
+        WHERE chat_id = $2 AND is_read = false AND sender_id != $1
+    ) unread ON true
+    WHERE u.id = $1;
+`, companionId, chatId).Scan(
+		&chatInfo.Partner.FirstName,
+		&chatInfo.Partner.LastName,
+		&chatInfo.Partner.AvatarUrl,
+		&chatInfo.LastMessage.Id,
+		&chatInfo.LastMessage.SenderId,
+		&chatInfo.LastMessage.Content,
+		&chatInfo.LastMessage.CreatedAt,
+		&chatInfo.LastMessage.IsRead,
+		&chatInfo.UnreadCount,
+	)
+	if err != nil {
+		return model.Chat{}, err
+	}
+
+	chatInfo.Id = chatId
+	chatInfo.Partner.Id = companionId
+	chatInfo.LastMessage.ChatId = chatId
+	log.Println(chatInfo)
+	return chatInfo, nil
 }

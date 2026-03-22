@@ -2,10 +2,11 @@ package Handler
 
 import (
 	"backend/internal/middleware"
+	"backend/internal/model"
 	"backend/internal/service"
+	"encoding/json"
 	"log"
 	"net/http"
-	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -31,38 +32,58 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-var (
-	rooms   = make(map[int][]*websocket.Conn)
-	roomsMu sync.Mutex // Мьютекс для защиты карты rooms
-)
-
 func (h *chatHandler) ConnectChat(c *gin.Context) {
 	userId := middleware.GetUserIDFromContext(c)
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Println(err)
+		log.Println("Upgrade error:", err)
 		return
 	}
-	defer conn.Close()
+
+	var currentRoomId int
+
+	defer func() {
+		log.Printf("User %d disconnecting from room %d", userId, currentRoomId)
+		h.s.Disconnect(conn, currentRoomId)
+	}()
 
 	for {
 		_, payload, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
-		ttype, err := h.s.ChatGetCommand(payload)
-		if err != nil {
-			log.Println(err)
+
+		var baseMessage model.BaseMessage
+		if err := json.Unmarshal(payload, &baseMessage); err != nil {
+			log.Println("Unmarshal error:", err)
+			continue // Не выходим из цикла, просто ждем следующее сообщение
 		}
-		result, err := h.s.ChatExecuteCommand(userId, ttype, payload)
-		if err != nil {
-			return
+
+		var result []byte
+		var rId int
+
+		switch baseMessage.Type {
+		case "get_chats":
+			result, err = h.s.GetChats(userId)
+		case "start_chat":
+			rId, result, err = h.s.StartChat(payload, userId, conn)
+			if err == nil {
+				currentRoomId = rId
+			}
 		}
-		err = conn.WriteMessage(websocket.TextMessage, result)
+
 		if err != nil {
-			log.Println(err)
+			log.Println("Service error:", err)
+			continue
+		}
+
+		if result != nil {
+			err = conn.WriteMessage(websocket.TextMessage, result)
+			if err != nil {
+				log.Println("Write error:", err)
+				break
+			}
 		}
 	}
-
 }
