@@ -102,8 +102,8 @@ func (h *authHandler) VerifyOTP(c *gin.Context) {
 	}
 
 	if !userInfo.IsNewUser && accessToken != "" && refreshToken != "" {
-		c.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
-		c.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
+		c.SetCookie("access_token", accessToken, 60*15, "/", "", false, true)
+		c.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "", false, true)
 	}
 
 	c.JSON(http.StatusOK, userInfo)
@@ -134,8 +134,8 @@ func (h *authHandler) SaveUserData(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("access_token", accessToken, 60*15, "/", "localhost", false, true)
-	c.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "localhost", false, true)
+	c.SetCookie("access_token", accessToken, 60*15, "/", "", false, true)
+	c.SetCookie("refresh_token", refreshToken, 60*60*24*90, "/", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"massage": "Register success!"})
 }
@@ -185,6 +185,6 @@ func (h *authHandler) UpdateToken(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.SetCookie("access_token", newAccessToken, 60*15, "/", "localhost", false, true)
+	c.SetCookie("access_token", newAccessToken, 60*15, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"massage": "Update success!"})
 }

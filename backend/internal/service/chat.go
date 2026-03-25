@@ -8,6 +8,7 @@ import (
 	"errors"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -20,6 +21,7 @@ type ChatService interface {
 	Disconnect(conn *websocket.Conn, roomId int) error
 	GetChats(userId int) ([]byte, error)
 	StartChat(data []byte, userId int, conn *websocket.Conn) (int, []byte, error)
+	SaveMassage(data []byte, userId int, conn *websocket.Conn) (*websocket.Conn, []byte, error)
 }
 
 func NewChatService(postgres postgres.ChatRepository) ChatService {
@@ -95,7 +97,7 @@ func (s *chatService) StartChat(data []byte, userId int, conn *websocket.Conn) (
 	// Используем defer, чтобы мьютекс разблокировался в любом случае
 	defer roomsMu.Unlock()
 
-	chat, err := s.postgres.GetPartnerInfo(payload.UserId, userId)
+	chat, err := s.postgres.GetPartnerInfo(payload.UserId, roomId)
 	if err != nil {
 		return roomId, nil, err
 	}
@@ -118,4 +120,45 @@ func (s *chatService) StartChat(data []byte, userId int, conn *websocket.Conn) (
 	rooms[roomId] = append(rooms[roomId], conn)
 
 	return roomId, jsonData, nil
+}
+
+func (s *chatService) SaveMassage(data []byte, userId int, conn *websocket.Conn) (*websocket.Conn, []byte, error) {
+	var payload model.SendMessage
+	err := json.Unmarshal(data, &payload)
+	if err != nil {
+		log.Println(err)
+	}
+	msgId, createdAt, err := s.postgres.SaveMessage(payload.ChatId, userId, payload.Text)
+	if err != nil {
+		log.Println(err)
+		return &websocket.Conn{}, nil, err
+	}
+
+	var result = model.SendMessageResult{
+		Type:   "send_message",
+		ChatId: payload.ChatId,
+		Message: struct {
+			Id        int       `json:"id"`
+			SenderId  int       `json:"senderId"`
+			Content   string    `json:"content"`
+			CreatedAt time.Time `json:"createdAt"`
+		}{Id: msgId, SenderId: userId, Content: payload.Text, CreatedAt: createdAt},
+	}
+
+	jsonData, err := json.Marshal(result)
+
+	var senderConn *websocket.Conn
+
+	roomsMu.Lock()
+	defer roomsMu.Unlock()
+
+	if len(rooms[payload.ChatId]) <= 2 {
+		if rooms[payload.ChatId][0] == conn {
+			senderConn = rooms[payload.ChatId][1]
+		} else {
+			senderConn = rooms[payload.ChatId][0]
+		}
+	}
+
+	return senderConn, jsonData, nil
 }

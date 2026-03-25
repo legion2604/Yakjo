@@ -3,6 +3,8 @@ package middleware
 import (
 	"backend/internal/security"
 	"context"
+	"errors"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,12 +17,14 @@ func JWTAuthMiddleware(security security.Security) gin.HandlerFunc {
 		token, err := c.Cookie("access_token")
 		if err != nil || token == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "No access token"})
+			log.Println(err, errors.New("1"))
 			c.Abort()
 			return
 		}
 		claims, err := security.VerifyJwtToken(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+			log.Println(err)
 			c.Abort()
 			return
 		}

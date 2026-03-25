@@ -62,7 +62,7 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 
 		var result []byte
 		var rId int
-
+		var sendConn = conn
 		switch baseMessage.Type {
 		case "get_chats":
 			result, err = h.s.GetChats(userId)
@@ -71,6 +71,12 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 			if err == nil {
 				currentRoomId = rId
 			}
+		case "send_message":
+			sendConn, result, err = h.s.SaveMassage(payload, userId, conn)
+			if err != nil {
+				log.Println("SaveMassage error:", err)
+			}
+
 		}
 
 		if err != nil {
@@ -78,8 +84,8 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 			continue
 		}
 
-		if result != nil {
-			err = conn.WriteMessage(websocket.TextMessage, result)
+		if result != nil && sendConn != nil {
+			err = sendConn.WriteMessage(websocket.TextMessage, result)
 			if err != nil {
 				log.Println("Write error:", err)
 				break

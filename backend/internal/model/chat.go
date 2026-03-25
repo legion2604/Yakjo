@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type UserChat struct {
 	Id        int    `json:"id"`
 	FirstName string `json:"firstName"`
@@ -45,4 +47,20 @@ type GetChatsMessage struct {
 type StartChatMessage struct {
 	Type   string `json:"type"`
 	UserId int    `json:"userId"`
+}
+
+type SendMessage struct {
+	Type   string `json:"type"`
+	ChatId int    `json:"chatId"`
+	Text   string `json:"text"`
+}
+type SendMessageResult struct {
+	Type    string `json:"type"`
+	ChatId  int    `json:"chatId"`
+	Message struct {
+		Id        int       `json:"id"`
+		SenderId  int       `json:"senderId"`
+		Content   string    `json:"content"`
+		CreatedAt time.Time `json:"createdAt"`
+	} `json:"message"`
 }

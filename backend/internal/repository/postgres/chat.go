@@ -4,6 +4,7 @@ import (
 	"backend/internal/model"
 	"database/sql"
 	"log"
+	"time"
 )
 
 type chatRepository struct {
@@ -15,6 +16,7 @@ type ChatRepository interface {
 	FindRoom(userId, companionId int) (int, error)
 	CreateRoom(userId, companionId int) (int, error)
 	GetPartnerInfo(companionId, chatId int) (model.Chat, error)
+	SaveMessage(chatId, userId int, text string) (int, time.Time, error)
 }
 
 func NewChatRepository(db *sql.DB) ChatRepository {
@@ -152,4 +154,14 @@ func (r *chatRepository) GetPartnerInfo(companionId, chatId int) (model.Chat, er
 	chatInfo.LastMessage.ChatId = chatId
 	log.Println(chatInfo)
 	return chatInfo, nil
+}
+
+func (r *chatRepository) SaveMessage(chatId, userId int, text string) (int, time.Time, error) {
+	var msgId int
+	var createdAt time.Time
+	err := r.db.QueryRow("INSERT INTO messages (chat_id,sender_id,content) VALUES ($1,$2,$3) RETURNING id,created_at", chatId, userId, text).Scan(&msgId, &createdAt)
+	if err != nil {
+		return 0, time.Time{}, err
+	}
+	return msgId, createdAt, nil
 }
