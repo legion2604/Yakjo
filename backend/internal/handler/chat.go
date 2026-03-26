@@ -81,6 +81,12 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 			if err != nil {
 				log.Println("GetHistory error:", err)
 			}
+
+		case "read_messages":
+			err = h.s.ReadMessage(payload)
+			if err != nil {
+				log.Println("ReadMessage error:", err)
+			}
 		}
 
 		if err != nil {

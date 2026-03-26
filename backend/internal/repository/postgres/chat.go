@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"log"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type chatRepository struct {
@@ -18,6 +20,7 @@ type ChatRepository interface {
 	GetPartnerInfo(companionId, chatId int) (model.Chat, error)
 	SaveMessage(chatId, userId int, text string) (int, time.Time, error)
 	GetHistory(userId, chatId, limit, offset int) ([]model.MsgGetHistory, bool, error)
+	ReadMessage(msgId []int, chatId int) error
 }
 
 func NewChatRepository(db *sql.DB) ChatRepository {
@@ -200,4 +203,13 @@ func (r *chatRepository) GetHistory(userId, chatId, limit, offset int) ([]model.
 		history = append(history, msg)
 	}
 	return history, hasMore, nil
+}
+
+func (r *chatRepository) ReadMessage(msgId []int, chatId int) error {
+	_, err := r.db.Exec(`UPDATE messages SET is_read = true  WHERE id = ANY($1) AND chat_id=$2`, pq.Array(msgId), chatId)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
 }

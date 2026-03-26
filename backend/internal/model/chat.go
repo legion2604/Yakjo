@@ -85,3 +85,9 @@ type MsgGetHistory struct {
 	CreatedAt time.Time `json:"createdAt"`
 	IsRead    bool      `json:"isRead"`
 }
+
+type ReadMessages struct {
+	Type       string `json:"type"`
+	ChatId     int    `json:"chatId"`
+	MessageIds []int  `json:"messageIds"`
+}

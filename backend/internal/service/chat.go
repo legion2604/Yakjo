@@ -23,6 +23,7 @@ type ChatService interface {
 	StartChat(data []byte, userId int, conn *websocket.Conn) (int, []byte, error)
 	SaveMassage(data []byte, userId int, conn *websocket.Conn) (*websocket.Conn, []byte, error)
 	GetHistory(userId int, data []byte) ([]byte, error)
+	ReadMessage(data []byte) error
 }
 
 func NewChatService(postgres postgres.ChatRepository) ChatService {
@@ -189,4 +190,20 @@ func (s *chatService) GetHistory(userId int, data []byte) ([]byte, error) {
 		return nil, err
 	}
 	return jsonData, nil
+}
+
+func (s *chatService) ReadMessage(data []byte) error {
+	var payload model.ReadMessages
+	err := json.Unmarshal(data, &payload)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = s.postgres.ReadMessage(payload.MessageIds, payload.ChatId)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	return nil
 }
