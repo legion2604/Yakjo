@@ -19,8 +19,8 @@ class WebSocketClient {
         // Production vs Dev URL
         const isProd = window.location.hostname !== 'localhost';
         const wsUrl = isProd
-            ? `wss://api.yakjo.tj/v1/ws`
-            : `ws://localhost:8080/v1/ws`;
+            ? `wss://api.yakjo.tj/api/ws/`
+            : `ws://localhost:8080/api/ws/`;
 
         this.socket = new WebSocket(wsUrl);
 
