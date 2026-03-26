@@ -22,6 +22,7 @@ type ChatService interface {
 	GetChats(userId int) ([]byte, error)
 	StartChat(data []byte, userId int, conn *websocket.Conn) (int, []byte, error)
 	SaveMassage(data []byte, userId int, conn *websocket.Conn) (*websocket.Conn, []byte, error)
+	GetHistory(userId int, data []byte) ([]byte, error)
 }
 
 func NewChatService(postgres postgres.ChatRepository) ChatService {
@@ -123,7 +124,7 @@ func (s *chatService) StartChat(data []byte, userId int, conn *websocket.Conn) (
 }
 
 func (s *chatService) SaveMassage(data []byte, userId int, conn *websocket.Conn) (*websocket.Conn, []byte, error) {
-	var payload model.SendMessage
+	var payload model.NewMessage
 	err := json.Unmarshal(data, &payload)
 	if err != nil {
 		log.Println(err)
@@ -134,7 +135,7 @@ func (s *chatService) SaveMassage(data []byte, userId int, conn *websocket.Conn)
 		return &websocket.Conn{}, nil, err
 	}
 
-	var result = model.SendMessageResult{
+	var result = model.NewMessageResult{
 		Type:   "send_message",
 		ChatId: payload.ChatId,
 		Message: struct {
@@ -161,4 +162,31 @@ func (s *chatService) SaveMassage(data []byte, userId int, conn *websocket.Conn)
 	}
 
 	return senderConn, jsonData, nil
+}
+
+func (s *chatService) GetHistory(userId int, data []byte) ([]byte, error) {
+	var payload model.GetHistory
+	err := json.Unmarshal(data, &payload)
+	if err != nil {
+		log.Println(err)
+	}
+
+	history, hasMore, err := s.postgres.GetHistory(userId, payload.ChatId, payload.Limit, payload.Offset)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	response := model.GetHistoryResult{
+		Type:    "get_history",
+		ChatId:  payload.ChatId,
+		Data:    history,
+		HasMore: hasMore,
+	}
+	jsonData, err := json.Marshal(response)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return jsonData, nil
 }

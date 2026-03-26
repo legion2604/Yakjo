@@ -49,12 +49,12 @@ type StartChatMessage struct {
 	UserId int    `json:"userId"`
 }
 
-type SendMessage struct {
+type NewMessage struct {
 	Type   string `json:"type"`
 	ChatId int    `json:"chatId"`
 	Text   string `json:"text"`
 }
-type SendMessageResult struct {
+type NewMessageResult struct {
 	Type    string `json:"type"`
 	ChatId  int    `json:"chatId"`
 	Message struct {
@@ -63,4 +63,25 @@ type SendMessageResult struct {
 		Content   string    `json:"content"`
 		CreatedAt time.Time `json:"createdAt"`
 	} `json:"message"`
+}
+
+type GetHistory struct {
+	Type   string `json:"type"`
+	ChatId int    `json:"chatId"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
+}
+
+type GetHistoryResult struct {
+	Type    string          `json:"type"`
+	ChatId  int             `json:"chatId"`
+	Data    []MsgGetHistory `json:"data"`
+	HasMore bool            `json:"hasMore"`
+}
+type MsgGetHistory struct {
+	Id        int       `json:"id"`
+	SenderId  int       `json:"senderId"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"createdAt"`
+	IsRead    bool      `json:"isRead"`
 }

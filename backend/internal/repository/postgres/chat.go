@@ -17,6 +17,7 @@ type ChatRepository interface {
 	CreateRoom(userId, companionId int) (int, error)
 	GetPartnerInfo(companionId, chatId int) (model.Chat, error)
 	SaveMessage(chatId, userId int, text string) (int, time.Time, error)
+	GetHistory(userId, chatId, limit, offset int) ([]model.MsgGetHistory, bool, error)
 }
 
 func NewChatRepository(db *sql.DB) ChatRepository {
@@ -164,4 +165,39 @@ func (r *chatRepository) SaveMessage(chatId, userId int, text string) (int, time
 		return 0, time.Time{}, err
 	}
 	return msgId, createdAt, nil
+}
+
+func (r *chatRepository) GetHistory(userId, chatId, limit, offset int) ([]model.MsgGetHistory, bool, error) {
+	// проверка безопастности что этот юзер вообще с это комнаты
+	rows, err := r.db.Query(`
+    SELECT m.id, m.sender_id, m.content, m.created_at, m.is_read 
+    FROM messages m 
+    JOIN chats c ON m.chat_id = c.id 
+    WHERE (c.first_user_id = $1 OR c.second_user_id = $1) 
+      AND m.chat_id = $2 
+    ORDER BY m.created_at DESC 
+    LIMIT $3
+    OFFSET $4`,
+		userId, chatId, limit+1, offset,
+	)
+
+	if err != nil {
+		return nil, false, err
+	}
+	var history []model.MsgGetHistory
+	var hasMore = false
+	var count = 0
+	for rows.Next() {
+		count++
+		if count > limit {
+			hasMore = true
+			break
+		}
+		var msg model.MsgGetHistory
+		if err := rows.Scan(&msg.Id, &msg.SenderId, &msg.Content, &msg.CreatedAt, &msg.IsRead); err != nil {
+			return nil, hasMore, err
+		}
+		history = append(history, msg)
+	}
+	return history, hasMore, nil
 }

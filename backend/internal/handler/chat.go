@@ -76,7 +76,11 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 			if err != nil {
 				log.Println("SaveMassage error:", err)
 			}
-
+		case "get_history":
+			result, err = h.s.GetHistory(userId, payload)
+			if err != nil {
+				log.Println("GetHistory error:", err)
+			}
 		}
 
 		if err != nil {
