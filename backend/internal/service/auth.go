@@ -6,9 +6,11 @@ import (
 	"backend/internal/repository/postgres"
 	"backend/internal/repository/redis"
 	"backend/internal/security"
+	"backend/pkg/utils"
 	"context"
 	"errors"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -32,12 +34,20 @@ func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository
 }
 
 func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) error {
+	if len(phone.Phone) != 9 || (len(phone.Phone) == 11 && !strings.HasPrefix(phone.Phone, "992") || !utils.IsNumeric(phone.Phone)) {
+		return errors.New("invalid phone number")
+	}
+
+	if !strings.HasPrefix(phone.Phone, "992") {
+		phone.Phone = "992" + phone.Phone
+	}
+
 	code := otp.GenerateOTP()
-	log.Println("OTP code:", code)
-	//err := s.osonSms.SendOtp(phone.Phone, code)
-	//if err != nil {
-	//	return err
-	//}
+	log.Printf("OTP code from %s is : %s", phone, code)
+	err := s.osonSms.SendOtp(phone.Phone, code)
+	if err != nil {
+		return err
+	}
 
 	otpSendAttempts, err := s.redis.GetOtpSendAttempts(ctx, phone.Phone)
 
