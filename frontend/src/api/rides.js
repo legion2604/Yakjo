@@ -6,7 +6,11 @@ export const ridesApi = {
      */
     search: (params) => {
         // params can include from, to, date, seats, sort, page, limit
-        const queryParams = new URLSearchParams(params).toString();
+        const cleanParams = {};
+        for (const key in params) {
+            cleanParams[key] = params[key] == null ? '' : params[key];
+        }
+        const queryParams = new URLSearchParams(cleanParams).toString();
         return api.get(`/rides/search?${queryParams}`);
     },
 

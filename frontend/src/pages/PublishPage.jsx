@@ -15,6 +15,8 @@ const PublishPage = () => {
         to: '',
         date: '',
         time: '',
+        arrivalDate: '',
+        arrivalTime: '',
         price: '',
         seats: 3,
         description: ''
@@ -36,9 +38,28 @@ const PublishPage = () => {
             return;
         }
 
+        let arrivalSelectedDate = null;
+        if (formData.arrivalDate && formData.arrivalTime) {
+            arrivalSelectedDate = new Date(`${formData.arrivalDate}T${formData.arrivalTime}`);
+            if (arrivalSelectedDate < selectedDate) {
+                alert('Время прибытия не может быть раньше времени отправления');
+                return;
+            }
+        }
+
+        const payload = {
+            from: formData.from,
+            to: formData.to,
+            departureTime: selectedDate.toISOString(),
+            arrivalTime: arrivalSelectedDate ? arrivalSelectedDate.toISOString() : new Date(0).toISOString(),
+            price: Number(formData.price),
+            totalSeats: Number(formData.seats),
+            description: formData.description
+        };
+
         setLoading(true);
         try {
-            await ridesApi.create(formData);
+            await ridesApi.create(payload);
             alert(t('publish.success'));
             navigate('/');
         } catch (error) {
@@ -98,7 +119,7 @@ const PublishPage = () => {
                                 name="date"
                                 value={formData.date}
                                 onChange={handleChange}
-                                label={t('publish.labelDate')}
+                                label="Дата отправления"
                                 required
                             />
                             <Input
@@ -107,8 +128,26 @@ const PublishPage = () => {
                                 name="time"
                                 value={formData.time}
                                 onChange={handleChange}
-                                label={t('publish.labelTime')}
+                                label="Время отправления"
                                 required
+                            />
+                        </div>
+                        <div className="input-row mt-4">
+                            <Input
+                                type="date"
+                                icon={Calendar}
+                                name="arrivalDate"
+                                value={formData.arrivalDate}
+                                onChange={handleChange}
+                                label="Дата прибытия (необязательно)"
+                            />
+                            <Input
+                                type="time"
+                                icon={Clock}
+                                name="arrivalTime"
+                                value={formData.arrivalTime}
+                                onChange={handleChange}
+                                label="Время прибытия (необязательно)"
                             />
                         </div>
                     </div>

@@ -62,8 +62,8 @@ const SearchPage = () => {
                     date: searchParams.get('date'),
                     seats: searchParams.get('seats')
                 };
-                const data = await ridesApi.search(params);
-                setRides(data);
+                const response = await ridesApi.search(params);
+                setRides(Array.isArray(response) ? response : (response?.data || []));
             } catch (error) {
                 console.error('Search failed:', error);
                 // Fallback for demo

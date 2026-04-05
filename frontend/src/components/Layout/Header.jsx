@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, PlusCircle, User, LogOut, Moon, Sun, Globe } from 'lucide-react';
+import { Search, PlusCircle, User, LogOut, Moon, Sun, Globe, MessageCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../context/SettingsContext';
 import Button from '../ui/Button';
@@ -31,10 +31,17 @@ const Header = () => {
                     </Link>
 
                     {user && (
-                        <Link to="/publish" className={`nav-link ${location.pathname === '/publish' ? 'active' : ''}`}>
-                            <PlusCircle size={20} />
-                            <span>{t('nav.publish')}</span>
-                        </Link>
+                        <>
+                            <Link to="/publish" className={`nav-link ${location.pathname === '/publish' ? 'active' : ''}`}>
+                                <PlusCircle size={20} />
+                                <span>{t('nav.publish')}</span>
+                            </Link>
+
+                            <Link to="/chats" className={`nav-link ${location.pathname.startsWith('/chats') ? 'active' : ''}`}>
+                                <MessageCircle size={20} />
+                                <span>Чаты</span>
+                            </Link>
+                        </>
                     )}
 
                     <Link to="/about" className="nav-link">{t('nav.about')}</Link>

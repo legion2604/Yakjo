@@ -191,6 +191,7 @@
       "to": "Худжанд",
       "price": 120,
       "departureTime": "2024-02-25T08:00:00Z", // UTC (ISO 8601)
+      "arrivalTime": "2024-02-25T15:20:00Z", // UTC (ISO 8601)
       "availableSeats": 3,
       "driver": {
         "id": 2,
@@ -229,6 +230,7 @@
   "totalSeats": 4,
   "availableSeats": 3,
   "departureTime": "2024-02-25T08:00:00Z",
+  "arrivalTime": "2024-02-25T15:20:00Z",
   "driver": {
     "id": 2,
     "firstName": "Алишер",
@@ -269,6 +271,7 @@
   "from": "Душанбе",
   "to": "Худжанд",
   "departureTime": "2024-02-25T08:00:00Z", // Обязательно (ISO 8601 UTC)
+  "arrivalTime": "2024-02-25T15:20:00Z", // Опционально (ISO 8601 UTC)
   "price": 120, // Обязательно (Цена за место)
   "totalSeats": 4, // Обязательно (Всего мест в машине)
   "description": "Заберу с центра" // Опционально

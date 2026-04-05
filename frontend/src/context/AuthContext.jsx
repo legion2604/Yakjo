@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authApi } from '../api/auth';
+import { wsClient } from '../api/socket';
 
 const AuthContext = createContext(null);
 
@@ -26,6 +27,14 @@ export const AuthProvider = ({ children }) => {
 
         checkAuth();
     }, []);
+
+    useEffect(() => {
+        if (user && !isLoading) {
+            wsClient.connect();
+        } else if (!user && !isLoading) {
+            wsClient.disconnect();
+        }
+    }, [user, isLoading]);
 
     const sendOtp = async (phone) => {
         try {
@@ -68,6 +77,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setUser(null);
             localStorage.removeItem('yakjo_user');
+            wsClient.disconnect();
         }
     };
 

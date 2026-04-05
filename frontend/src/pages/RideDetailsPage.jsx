@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Phone, Star, Car, ChevronRight, MessageCircle, CheckCircle, Users, Smartphone, Send } from 'lucide-react';
 import { ridesApi } from '../api/rides';
 import { usersApi } from '../api/users';
+import { wsClient } from '../api/socket';
 import Button from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -133,6 +134,16 @@ const RideDetailsPage = () => {
             console.error(error);
             setShowRatingModal(false);
             alert('Спасибо за оценку! (Demo)');
+        }
+    };
+
+    const handleStartChat = () => {
+        if (!user) {
+            navigate('/auth');
+            return;
+        }
+        if (ride?.driver?.id) {
+            navigate(`/chats/${ride.driver.id}`);
         }
     };
 
@@ -304,7 +315,7 @@ const RideDetailsPage = () => {
                                     </a>
                                 )}
 
-                                <button className="contact-btn btn-chat full-width" onClick={() => alert('Чат в разработке')}>
+                                <button className="contact-btn btn-chat full-width" onClick={handleStartChat}>
                                     <MessageCircle size={18} />
                                     Написать в чат
                                 </button>

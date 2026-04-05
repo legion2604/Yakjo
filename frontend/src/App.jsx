@@ -16,6 +16,8 @@ import RegisterPage from './pages/RegisterPage';
 import EditProfilePage from './pages/EditProfilePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import ChatsPage from './pages/ChatsPage';
+import ChatPage from './pages/ChatPage';
 
 import './App.css';
 
@@ -54,6 +56,22 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <EditProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chats"
+                  element={
+                    <ProtectedRoute>
+                      <ChatsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chats/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ChatPage />
                     </ProtectedRoute>
                   }
                 />

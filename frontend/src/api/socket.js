@@ -17,11 +17,12 @@ class WebSocketClient {
         console.log('Connecting to WebSocket...');
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         // Production vs Dev URL
-        const isProd = window.location.hostname !== 'localhost';
+        const isProd = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const wsUrl = isProd
             ? `wss://api.yakjo.tj/api/ws/`
-            : `ws://localhost:8080/api/ws/`;
+            : `${protocol}//${window.location.hostname}:8080/api/ws/`;
 
+        console.log(`Using WS URL: ${wsUrl}`);
         this.socket = new WebSocket(wsUrl);
 
         this.socket.onopen = () => {
@@ -33,6 +34,7 @@ class WebSocketClient {
 
         this.socket.onmessage = (event) => {
             try {
+                console.log('WS Raw Message:', event.data);
                 const payload = JSON.parse(event.data);
                 this.handleMessage(payload);
             } catch (e) {
@@ -41,7 +43,7 @@ class WebSocketClient {
         };
 
         this.socket.onclose = async (event) => {
-            console.log(`WebSocket Disconnected. Code: ${event.code}`);
+            console.log(`WebSocket Disconnected. Code: ${event.code}, Reason: ${event.reason}`);
             this.isConnected = false;
 
             // Handle 4001 (Unauthorized) - trigger token refresh and then reconnect
@@ -65,7 +67,7 @@ class WebSocketClient {
         };
 
         this.socket.onerror = (error) => {
-            console.error('WebSocket Error:', error);
+            console.error('WebSocket Error Object:', error);
         };
     }
 
@@ -107,6 +109,15 @@ class WebSocketClient {
             const data = this.pendingQueue.shift();
             this.send(data);
         }
+    }
+
+    disconnect() {
+        if (this.socket) {
+            this.socket.close(1000, "Logout");
+            this.socket = null;
+        }
+        this.isConnected = false;
+        this.reconnectAttempts = 0;
     }
 
     /**
