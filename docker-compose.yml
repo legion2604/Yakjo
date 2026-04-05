@@ -1,0 +1,19 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: yakjo-frontend-prod
+    restart: always
+    ports:
+      - "80:80"
+    # На проде лучше использовать именованный том для конфига,
+    # но для начала оставим привязку к файлу
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - yakjo-production
+
+networks:
+  yakjo-production:
+    driver: bridge

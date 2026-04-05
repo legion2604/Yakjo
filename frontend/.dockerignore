@@ -1,0 +1,24 @@
+# КРИТИЧЕСКИ ВАЖНО: не копируем локальные модули
+node_modules/
+
+# Игнорируем папку сборки
+dist/
+build/
+
+# Игнорируем логи ошибок npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Игнорируем системные файлы (особенно актуально для Mac)
+.DS_Store
+
+# Игнорируем Git и настройки редактора
+.git
+.vscode/
+.idea/
+
+# Игнорируем секреты
+.env
+.env.local
+.env*.local
