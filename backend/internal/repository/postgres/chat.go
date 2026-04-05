@@ -21,6 +21,7 @@ type ChatRepository interface {
 	SaveMessage(chatId, userId int, text string) (int, time.Time, error)
 	GetHistory(userId, chatId, limit, offset int) ([]model.MsgGetHistory, bool, error)
 	ReadMessage(msgId []int, chatId int) error
+	GetChatParticipants(chatId int) ([]int, error)
 }
 
 func NewChatRepository(db *sql.DB) ChatRepository {
@@ -31,36 +32,33 @@ func (r *chatRepository) GetChats(userId int) ([]model.Chat, error) {
 	var chats []model.Chat
 	rows, err := r.db.Query(`SELECT 
     c.id,
-    -- Выбираем ID партнера: если первый юзер это Я ($1), значит партнер - второй, и наоборот
     CASE 
         WHEN c.first_user_id = $1 THEN c.second_user_id 
         ELSE c.first_user_id 
     END as partner_id,
     u.first_name as partner_name,
     u.avatar_url as partner_avatar,
-    m.content as last_message_content,
-    m.created_at as last_message_at,
-    -- Считаем непрочитанные, которые прислали МНЕ
+    COALESCE(m.content, '') as last_message_content,  -- Добавлено COALESCE
+    COALESCE(m.created_at, '0001-01-01 00:00:00Z') as last_message_at, -- Добавлено COALESCE
     (SELECT COUNT(*) FROM messages 
      WHERE chat_id = c.id AND sender_id != $1 AND is_read = false) as unread_count
-	FROM chats c
--- Присоединяем таблицу юзеров для получения данных партнера
-	JOIN users u ON u.id = (
-    CASE 
-        WHEN c.first_user_id = $1 THEN c.second_user_id 
-        ELSE c.first_user_id 
-    END
-	)
--- Берем последнее сообщение через LATERAL или подзапрос
-	LEFT JOIN LATERAL (
-    SELECT content, created_at 
-    FROM messages 
-    WHERE chat_id = c.id 
-    ORDER BY created_at DESC 
-    LIMIT 1
-	) m ON true
-	WHERE c.first_user_id = $1 OR c.second_user_id = $1
-	ORDER BY m.created_at DESC;`, userId)
+    FROM chats c
+    JOIN users u ON u.id = (
+        CASE 
+            WHEN c.first_user_id = $1 THEN c.second_user_id 
+            ELSE c.first_user_id 
+        END
+    )
+    LEFT JOIN LATERAL (
+        SELECT content, created_at 
+        FROM messages 
+        WHERE chat_id = c.id 
+        ORDER BY created_at DESC 
+        LIMIT 1
+    ) m ON true
+    WHERE c.first_user_id = $1 OR c.second_user_id = $1
+    ORDER BY m.created_at DESC NULLS LAST;`, userId) // NULLS LAST для пустых чатов
+
 	if err != nil {
 		return nil, err
 	}
@@ -68,19 +66,29 @@ func (r *chatRepository) GetChats(userId int) ([]model.Chat, error) {
 
 	for rows.Next() {
 		var item model.Chat
-		// Временные переменные для сканирования плоского результата SQL в структуру
+		var lastContent sql.NullString
+		var lastAt pq.NullTime // или sql.NullTime
+
 		err := rows.Scan(
 			&item.Id,
 			&item.Partner.Id,
 			&item.Partner.FirstName,
 			&item.Partner.AvatarUrl,
-			&item.LastMessage.Content,
-			&item.LastMessage.CreatedAt,
+			&lastContent, // Сканируем в NullString
+			&lastAt,      // Сканируем в NullTime
 			&item.UnreadCount,
 		)
 		if err != nil {
 			return nil, err
 		}
+
+		if lastContent.Valid {
+			item.LastMessage.Content = lastContent.String
+		}
+		if lastAt.Valid {
+			item.LastMessage.CreatedAt = lastAt.Time.String()
+		}
+
 		chats = append(chats, item)
 	}
 	return chats, nil
@@ -212,4 +220,13 @@ func (r *chatRepository) ReadMessage(msgId []int, chatId int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *chatRepository) GetChatParticipants(chatId int) ([]int, error) {
+	var u1, u2 int
+	err := r.db.QueryRow("SELECT first_user_id, second_user_id FROM chats WHERE id=$1", chatId).Scan(&u1, &u2)
+	if err != nil {
+		return nil, err
+	}
+	return []int{u1, u2}, nil
 }

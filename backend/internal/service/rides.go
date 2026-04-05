@@ -23,7 +23,19 @@ func NewRideService(postgres postgres.RideRepository) RideService {
 }
 
 func (s *ridesService) GetRides(req model.RidesRequest) ([]model.Ride, int, error) {
-	layout := "2006-01-02"
+	const layout = "2006-01-02"
+	if req.From == "" {
+		req.From = "*"
+	}
+	if req.To == "" {
+		req.To = "*"
+	}
+	if req.Date == "" {
+		req.Date = time.Now().Format(layout)
+	}
+	if req.Seats == 0 {
+		req.Seats = 1
+	}
 
 	parsed, err := time.Parse(layout, req.Date)
 	if err != nil {
@@ -64,6 +76,9 @@ func (s *ridesService) GetRideContacts(id int) (model.RideContacts, error) {
 func (s *ridesService) CreateRide(driverId int, ride model.RideForm) (int, error) {
 	if ride.TotalSeats < 1 || ride.DepartureTime.Before(time.Now()) {
 		return 0, errors.New("validation error (seats < 1, past date)")
+	}
+	if !ride.ArrivalTime.IsZero() && ride.ArrivalTime.Before(ride.DepartureTime) {
+		return 0, errors.New("validation error (arrival time before departure time)")
 	}
 	id, err := s.postgres.CreateRide(driverId, ride)
 	if err != nil {

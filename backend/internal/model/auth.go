@@ -26,6 +26,9 @@ type GetFullUserInfo struct {
 	Phone      string  `json:"phone"`
 	FirstName  string  `json:"firstName"`
 	LastName   string  `json:"lastName"`
+	BirthDate  string  `json:"birthDate"`
+	Email      string  `json:"email"`
+	CarBrand   string  `json:"carBrand"`
 	AvatarUrl  string  `json:"avatarUrl"`
 	Rating     float64 `json:"rating"`
 	RidesCount int     `json:"ridesCount"`

@@ -67,7 +67,7 @@ func (o *osonSMS) SendOtp(phone string, otp int) error {
 
 	body, _ := io.ReadAll(resp.Body)
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("status: %s, body: %s", resp.Status, string(body))
 	}
 

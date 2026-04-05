@@ -50,7 +50,7 @@ func (r *userRepository) GetReviewsByUserId(userId int) ([]model.Review, error) 
 }
 
 func (r *userRepository) ChangeUserInfo(userId int, data model.NewUserData) error {
-	_, err := r.db.Exec("UPDATE users SET first_name=$1, bio=$2, whatsapp=$3, telegram=$4 WHERE id=$5", data.FirstName, data.Bio, data.Whatsapp, data.Telegram, userId)
+	_, err := r.db.Exec("UPDATE users SET first_name=$1,last_name=$2, bio=$3,birth_date=$4,car_brand=$5, whatsapp=$6, telegram=$7 WHERE id=$8", data.FirstName, data.LastName, data.Bio, data.BirthDate, data.CarBrand, data.Whatsapp, data.Telegram, userId)
 	if err != nil {
 		return err
 	}

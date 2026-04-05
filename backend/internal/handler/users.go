@@ -17,7 +17,7 @@ type usersHandler struct {
 type UsersHandler interface {
 	GetUserById(c *gin.Context)
 	ChangeUserInfo(c *gin.Context)
-	AddReview(с *gin.Context)
+	AddReview(c *gin.Context)
 }
 
 func NewUsersHandler(s service.UsersService, security security.Security) UsersHandler {

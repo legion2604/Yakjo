@@ -60,10 +60,10 @@ func (r *authRepository) GetUserInfoById(userId int) (model.GetFullUserInfo, err
 	res.Id = userId
 
 	err := r.db.QueryRow(`
-		SELECT phone, first_name, last_name, avatar_url, rating, rides_count, telegram, whatsapp
+		SELECT phone, first_name, last_name, avatar_url, rating, rides_count, telegram, whatsapp, birth_date, email, car_brand
 		FROM users
 		WHERE id = $1
-	`, userId).Scan(&res.Phone, &res.FirstName, &res.LastName, &res.AvatarUrl, &res.Rating, &res.RidesCount, &res.Telegram, &res.Whatsapp)
+	`, userId).Scan(&res.Phone, &res.FirstName, &res.LastName, &res.AvatarUrl, &res.Rating, &res.RidesCount, &res.Telegram, &res.Whatsapp, &res.BirthDate, &res.Email, &res.CarBrand)
 
 	if err != nil {
 		log.Println(err)

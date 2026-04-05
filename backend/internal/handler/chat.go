@@ -65,6 +65,7 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 		var sendConn = conn
 		switch baseMessage.Type {
 		case "get_chats":
+			log.Println("Get chats")
 			result, err = h.s.GetChats(userId)
 		case "start_chat":
 			rId, result, err = h.s.StartChat(payload, userId, conn)
@@ -77,12 +78,14 @@ func (h *chatHandler) ConnectChat(c *gin.Context) {
 				log.Println("SaveMassage error:", err)
 			}
 		case "get_history":
+			log.Println("get history")
 			result, err = h.s.GetHistory(userId, payload)
 			if err != nil {
 				log.Println("GetHistory error:", err)
 			}
 
 		case "read_messages":
+			log.Println("read messages")
 			err = h.s.ReadMessage(payload)
 			if err != nil {
 				log.Println("ReadMessage error:", err)

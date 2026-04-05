@@ -30,11 +30,13 @@ func NewRidesHandler(s service.RideService, security security.Security) RidesHan
 func (h *ridesHandler) GetRides(ctx *gin.Context) {
 	var req model.RidesRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
+		log.Println(err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	res, countRides, err := h.s.GetRides(req)
 	if err != nil {
+		log.Println(err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

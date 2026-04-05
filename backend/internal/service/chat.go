@@ -82,7 +82,7 @@ func (s *chatService) StartChat(data []byte, userId int, conn *websocket.Conn) (
 	if err != nil {
 		log.Println(err)
 	}
-
+	log.Println("Start chat", payload)
 	roomId, err := s.postgres.FindRoom(userId, payload.UserId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

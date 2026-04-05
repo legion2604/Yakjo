@@ -24,7 +24,10 @@ type NewReview struct {
 
 type NewUserData struct {
 	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Bio       string `json:"bio"`
+	BirthDate string `json:"birthDate"`
+	CarBrand  string `json:"carBrand"`
 	Whatsapp  string `json:"whatsapp"`
 	Telegram  string `json:"telegram"`
 }

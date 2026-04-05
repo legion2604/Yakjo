@@ -8,6 +8,7 @@ type Ride struct {
 	To             string    `json:"to"`
 	Price          int       `json:"price"`
 	DepartureTime  time.Time `json:"departureTime"`
+	ArrivalTime    time.Time `json:"arrivalTime"`
 	AvailableSeats int       `json:"availableSeats"`
 	Driver         struct {
 		Id        int     `json:"id"`
@@ -20,11 +21,11 @@ type Ride struct {
 }
 
 type RidesRequest struct {
-	From  string `form:"from" binding:"required"`
-	To    string `form:"to" binding:"required"`
-	Date  string `form:"date" binding:"required"` // YYYY-MM-DD
-	Seats int    `form:"seats" binding:"required"`
-	Sort  string `form:"sort"`
+	From  string `form:"from"  default:"*"`
+	To    string `form:"to" default:"*"`
+	Date  string `form:"date" default:"*"`
+	Seats int    `form:"seats" default:"4"`
+	Sort  string `form:"sort"  default:"desc"`
 	Page  int    `form:"page,default=1"`
 	Limit int    `form:"limit,default=10"`
 }
@@ -38,6 +39,7 @@ type FullInfoRide struct {
 	TotalSeats     int       `json:"totalSeats"`
 	AvailableSeats int       `json:"availableSeats"`
 	DepartureTime  time.Time `json:"departureTime"`
+	ArrivalTime    time.Time `json:"arrivalTime"`
 	Driver         struct {
 		Id        string  `json:"id"`
 		FirstName string  `json:"firstName"`
@@ -59,6 +61,7 @@ type RideForm struct {
 	From          string    `json:"from"`
 	To            string    `json:"to"`
 	DepartureTime time.Time `json:"departureTime"`
+	ArrivalTime   time.Time `json:"arrivalTime"`
 	Price         int       `json:"price"`
 	TotalSeats    int       `json:"totalSeats"`
 	Description   string    `json:"description"`
