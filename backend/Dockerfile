@@ -11,7 +11,7 @@ RUN go mod download
 COPY . .
 
 # Сборка. Путь ./cmd/main.go должен существовать внутри папки backend
-RUN CGO_ENABLED=0 GOOS=linux go build -o /yakjo_app ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -v -o /yakjo_app ./cmd/main.go
 
 # Stage 2: Финальный образ
 FROM alpine:latest
