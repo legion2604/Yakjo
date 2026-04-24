@@ -44,10 +44,10 @@ func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) err
 
 	code := otp.GenerateOTP()
 	log.Printf("OTP code from %s is : %s", phone, code)
-	//err := s.osonSms.SendOtp(phone.Phone, code)
-	//if err != nil {
-	//	return err
-	//}
+	err := s.osonSms.SendOtp(phone.Phone, code)
+	if err != nil {
+		return err
+	}
 
 	otpSendAttempts, err := s.redis.GetOtpSendAttempts(ctx, phone.Phone)
 
