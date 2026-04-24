@@ -174,10 +174,21 @@ func (h *authHandler) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"userInfo": nil})
 }
 
+// UpdateToken godoc
+// @Summary      Обновление access токена
+// @Description  Извлекает refresh_token из куки, генерирует новый access_token и сохраняет его в куки.
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        Cookie header string true "Рефреш токен в формате refresh_token=..."
+// @Success      200  {object}  map[string]string "Сообщение об успешном обновлении"
+// @Failure      400  {object}  map[string]interface{} "Ошибка в куках или токене"
+// @Failure      500  {object}  map[string]string "Ошибка при генерации токена"
+// @Router       /auth/update-token [post]
 func (h *authHandler) UpdateToken(c *gin.Context) {
 	refreshToken, err := c.Cookie("refresh_token")
 	if err != nil || refreshToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
 	newAccessToken, err := h.s.UpdateToken(refreshToken)

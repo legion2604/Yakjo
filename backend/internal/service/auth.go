@@ -44,10 +44,10 @@ func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) err
 
 	code := otp.GenerateOTP()
 	log.Printf("OTP code from %s is : %s", phone, code)
-	err := s.osonSms.SendOtp(phone.Phone, code)
-	if err != nil {
-		return err
-	}
+	//err := s.osonSms.SendOtp(phone.Phone, code)
+	//if err != nil {
+	//	return err
+	//}
 
 	otpSendAttempts, err := s.redis.GetOtpSendAttempts(ctx, phone.Phone)
 
@@ -79,6 +79,10 @@ func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) err
 }
 
 func (s *authService) VerifyOtp(ctx context.Context, req model.VerifyOtp) (model.GetUserInfo, string, string, error) {
+
+	if !strings.HasPrefix(req.Phone, "992") {
+		req.Phone = "992" + req.Phone
+	}
 
 	otpVerifyAttempts, err := s.redis.GetOtpVerifyAttempts(ctx, req.Phone)
 	if err != nil {

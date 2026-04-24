@@ -56,17 +56,28 @@ const SearchPage = () => {
             setLoading(true);
             try {
                 // Fetch from real backend
+                const currentPage = parseInt(searchParams.get('page') || '1');
                 const params = {
                     from: searchParams.get('from'),
                     to: searchParams.get('to'),
                     date: searchParams.get('date'),
-                    seats: searchParams.get('seats')
+                    seats: searchParams.get('seats'),
+                    sort: searchParams.get('sort'),
+                    page: currentPage,
+                    limit: 10
                 };
                 const response = await ridesApi.search(params);
-                setRides(Array.isArray(response) ? response : (response?.data || []));
+                const newRides = Array.isArray(response) ? response : (response?.data || []);
+
+                if (currentPage === 1) {
+                    setRides(newRides);
+                } else {
+                    setRides(prev => [...prev, ...newRides]);
+                }
             } catch (error) {
                 console.error('Search failed:', error);
                 // Fallback for demo
+                const currentPage = parseInt(searchParams.get('page') || '1');
                 const from = searchParams.get('from');
                 const to = searchParams.get('to');
                 const filtered = MOCK_RIDES.filter(ride => {
@@ -74,7 +85,14 @@ const SearchPage = () => {
                     if (to && !ride.to.toLowerCase().includes(to.toLowerCase())) return false;
                     return true;
                 });
-                setRides(filtered.length > 0 ? filtered : (from || to ? [] : MOCK_RIDES));
+                const fallbackRides = filtered.length > 0 ? filtered : (from || to ? [] : MOCK_RIDES);
+
+                if (currentPage === 1) {
+                    setRides(fallbackRides);
+                } else {
+                    // For mock data, we don't really have more pages, so just do nothing or append empty
+                    // In a real app, this wouldn't be hit unless API fails on page 2+
+                }
             } finally {
                 setLoading(false);
             }
@@ -202,6 +220,7 @@ const SearchPage = () => {
                                 <div className="flex justify-center mt-6">
                                     <Button
                                         variant="ghost"
+                                        isLoading={loading}
                                         onClick={() => {
                                             const nextPage = (parseInt(searchParams.get('page') || '1')) + 1;
                                             setSearchParams({ ...formState, page: nextPage });
