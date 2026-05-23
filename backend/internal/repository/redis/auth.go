@@ -39,11 +39,7 @@ func (r *authRepository) CreateOtpSend(cxt context.Context, phone string, otp in
 // Получение кода OTP
 
 func (r *authRepository) GetOtpSend(cxt context.Context, phone string) (string, error) {
-	res := r.client.Get(cxt, "otp:send:"+phone)
-	if res.Err() != nil {
-		return "", res.Err()
-	}
-	return res.Result()
+	return r.client.Get(cxt, "otp:send:"+phone).Result()
 }
 
 // Удаление кода OTP
@@ -93,9 +89,5 @@ func (r *authRepository) IncrementOtpVerifyAttempts(ctx context.Context, phone s
 }
 
 func (r *authRepository) GetOtpVerifyAttempts(cxt context.Context, phone string) (int, error) {
-	res := r.client.Get(cxt, "otp:verify:attempts:"+phone)
-	if res.Err() != nil {
-		return 0, res.Err()
-	}
-	return res.Int()
+	return r.client.Get(cxt, "otp:verify:attempts:"+phone).Int()
 }
