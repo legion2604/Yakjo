@@ -39,7 +39,7 @@ const Header = () => {
 
                             <Link to="/chats" className={`nav-link ${location.pathname.startsWith('/chats') ? 'active' : ''}`}>
                                 <MessageCircle size={20} />
-                                <span>Чаты</span>
+                                <span>{t('nav.chats')}</span>
                             </Link>
                         </>
                     )}

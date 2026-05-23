@@ -28,7 +28,7 @@ export const SettingsProvider = ({ children }) => {
     // --- Translations ---
     const translations = {
         ru: {
-            nav: { search: 'Найти', publish: 'Опубликовать', about: 'О нас', contact: 'Контакты', login: 'Войти', register: 'Регистрация', profile: 'Профиль', logout: 'Выйти' },
+            nav: { search: 'Найти', publish: 'Опубликовать', about: 'О нас', contact: 'Контакты', login: 'Войти', register: 'Регистрация', profile: 'Профиль', logout: 'Выйти', chats: 'Чаты' },
             hero: { title: 'Путешествуйте с комфортом и выгодой', subtitle: 'Более 1 миллиона маршрутов по всей стране', searchBtn: 'Найти поездку', placeholderFrom: 'Откуда', placeholderTo: 'Куда', placeholderDate: 'Сегодня', placeholderSeats: '1' },
             features: {
                 save: { title: 'Экономьте на поездках', desc: 'Никаких скрытых комиссий. Оплата наличными или картой водителю.' },
@@ -52,7 +52,13 @@ export const SettingsProvider = ({ children }) => {
                 reviews: 'отзыв',
                 age: 'лет',
                 comment: 'Комментарий водителя',
-                back: 'Назад'
+                back: 'Назад',
+                rateDriver: 'Оценить водителя',
+                writeReview: 'Напишите отзыв...',
+                cancel: 'Отмена',
+                submit: 'Отправить',
+                call: 'Позвонить',
+                writeChat: 'Написать в чат'
             },
             search: {
                 title: 'Доступные поездки',
@@ -64,7 +70,18 @@ export const SettingsProvider = ({ children }) => {
                 loading: 'Загрузка поездок...',
                 cheap: 'Самые дешевые',
                 early: 'Самые ранние',
-                seats: 'Мест'
+                seats: 'Мест',
+                expensive: 'Сначала дорогие',
+                loadMore: 'Загрузить еще'
+            },
+            chats: {
+                title: 'Мои чаты',
+                loading: 'Загрузка...',
+                empty: 'У вас пока нет чатов',
+                unknown: 'Неизвестный',
+                noMessages: 'Нет сообщений',
+                partner: 'Собеседник',
+                typeMessage: 'Написать сообщение...'
             },
             auth: {
                 login: 'Вход на Yakjo',
@@ -102,7 +119,15 @@ export const SettingsProvider = ({ children }) => {
                 edit: 'Редактировать',
                 logout: 'Выйти',
                 verified: 'Подтвержденный профиль',
-                stats: { rating: 'Рейтинг', rides: 'Поездок' }
+                stats: { rating: 'Рейтинг', rides: 'Поездок' },
+                myRides: {
+                    edit: 'Изменить',
+                    delete: 'Удалить',
+                    confirmDelete: 'Вы уверены, что хотите удалить эту поездку?',
+                    deleted: 'Поездка удалена',
+                    errorDelete: 'Ошибка при удалении',
+                    editTitle: 'Изменение поездки'
+                }
             },
             publish: {
                 title: 'Предложить поездку',
@@ -122,11 +147,30 @@ export const SettingsProvider = ({ children }) => {
                 pricePlaceholder: 'Цена за место',
                 commentPlaceholder: 'Укажите детали: место встречи, размер багажа...',
                 success: 'Поездка успешно опубликована!',
-                button: 'Опубликовать поездку'
+                button: 'Опубликовать поездку',
+                errorPast: 'Нельзя создать поездку в прошлом времени',
+                errorArrival: 'Время прибытия не может быть раньше времени отправления',
+                errorDuplicate: 'У вас уже есть поездка в это время. Выберите другое время или удалите старую поездку.',
+                errorLimit: 'Превышен лимит активных поездок (макс. 3) или ваш аккаунт ограничен.',
+                errorGeneric: 'Ошибка при публикации: ',
+                errorTryLater: 'попробуйте позже'
+            },
+            editProfile: {
+                errorName: 'Имя должно содержать минимум 2 символа',
+                errorBio: 'О себе: максимум 500 символов',
+                errorWhatsapp: 'Введите корректный номер WhatsApp (минимум 9 цифр)',
+                errorUpdate: 'Ошибка при обновлении профиля: ',
+                transport: 'Транспорт',
+                contacts: 'Контакты для связи',
+                about: 'О себе',
+                cancel: 'Отмена',
+                save: 'Сохранить',
+                placeholderCar: 'Например: Toyota Camry, Белый',
+                placeholderBio: 'Расскажите немного о себе, стаже вождения и т.д.'
             }
         },
         en: {
-            nav: { search: 'Search', publish: 'Publish', about: 'About', contact: 'Contact', login: 'Login', register: 'Sign Up', profile: 'Profile', logout: 'Logout' },
+            nav: { search: 'Search', publish: 'Publish', about: 'About', contact: 'Contact', login: 'Login', register: 'Sign Up', profile: 'Profile', logout: 'Logout', chats: 'Chats' },
             hero: { title: 'Travel with comfort and value', subtitle: 'Over 1 million routes across the country', searchBtn: 'Find a ride', placeholderFrom: 'From', placeholderTo: 'To', placeholderDate: 'Today', placeholderSeats: '1' },
             features: {
                 save: { title: 'Save on travel', desc: 'No hidden fees. Pay cash or card to the driver.' },
@@ -150,7 +194,13 @@ export const SettingsProvider = ({ children }) => {
                 reviews: 'review',
                 age: 'years',
                 comment: 'Driver comment',
-                back: 'Back'
+                back: 'Back',
+                rateDriver: 'Rate Driver',
+                writeReview: 'Write a review...',
+                cancel: 'Cancel',
+                submit: 'Submit',
+                call: 'Call',
+                writeChat: 'Message in chat'
             },
             search: {
                 title: 'Available rides',
@@ -162,7 +212,18 @@ export const SettingsProvider = ({ children }) => {
                 loading: 'Loading rides...',
                 cheap: 'Cheapest',
                 early: 'Earliest',
-                seats: 'Seats'
+                seats: 'Seats',
+                expensive: 'Most expensive',
+                loadMore: 'Load more'
+            },
+            chats: {
+                title: 'My Chats',
+                loading: 'Loading...',
+                empty: 'You have no chats yet',
+                unknown: 'Unknown',
+                noMessages: 'No messages',
+                partner: 'Partner',
+                typeMessage: 'Type a message...'
             },
             auth: {
                 login: 'Login to Yakjo',
@@ -200,7 +261,15 @@ export const SettingsProvider = ({ children }) => {
                 edit: 'Edit',
                 logout: 'Logout',
                 verified: 'Verified Profile',
-                stats: { rating: 'Rating', rides: 'Rides' }
+                stats: { rating: 'Rating', rides: 'Rides' },
+                myRides: {
+                    edit: 'Edit',
+                    delete: 'Delete',
+                    confirmDelete: 'Are you sure you want to delete this ride?',
+                    deleted: 'Ride deleted',
+                    errorDelete: 'Failed to delete ride',
+                    editTitle: 'Edit Ride'
+                }
             },
             publish: {
                 title: 'Offer a Ride',
@@ -220,11 +289,30 @@ export const SettingsProvider = ({ children }) => {
                 pricePlaceholder: 'Price per seat',
                 commentPlaceholder: 'Enter details: meeting point, luggage size...',
                 success: 'Ride published successfully!',
-                button: 'Publish Ride'
+                button: 'Publish Ride',
+                errorPast: 'Cannot create a ride in the past',
+                errorArrival: 'Arrival time cannot be earlier than departure time',
+                errorDuplicate: 'You already have a ride at this time. Choose another time or delete the old ride.',
+                errorLimit: 'Active rides limit exceeded (max 3) or your account is restricted.',
+                errorGeneric: 'Publish error: ',
+                errorTryLater: 'try again later'
+            },
+            editProfile: {
+                errorName: 'Name must contain at least 2 characters',
+                errorBio: 'About me: maximum 500 characters',
+                errorWhatsapp: 'Enter a valid WhatsApp number (min 9 digits)',
+                errorUpdate: 'Profile update error: ',
+                transport: 'Transport',
+                contacts: 'Contact Info',
+                about: 'About me',
+                cancel: 'Cancel',
+                save: 'Save',
+                placeholderCar: 'Example: Toyota Camry, White',
+                placeholderBio: 'Tell a bit about yourself, driving experience, etc.'
             }
         },
         tj: {
-            nav: { search: 'Ҷустуҷӯ', publish: 'Эълон кардан', about: 'Дар бораи мо', contact: 'Тамос', login: 'Воридшавӣ', register: 'Бақайдгирӣ', profile: 'Профил', logout: 'Баромад' },
+            nav: { search: 'Ҷустуҷӯ', publish: 'Эълон кардан', about: 'Дар бораи мо', contact: 'Тамос', login: 'Воридшавӣ', register: 'Бақайдгирӣ', profile: 'Профил', logout: 'Баромад', chats: 'Чатҳо' },
             hero: { title: 'Сафар бо роҳат ва арзон', subtitle: 'Зиёда аз 1 миллион хатсайр дар саросари кишвар', searchBtn: 'Ҷустуҷӯи сафар', placeholderFrom: 'Аз куҷо', placeholderTo: 'Ба куҷо', placeholderDate: 'Имрӯз', placeholderSeats: '1' },
             features: {
                 save: { title: 'Дар сафар сарфа кунед', desc: 'Ҳеҷ гуна пардохтҳои пинҳонӣ. Пардохт бо нақд ё корт ба ронанда.' },
@@ -248,7 +336,13 @@ export const SettingsProvider = ({ children }) => {
                 reviews: 'тафсир',
                 age: 'сола',
                 comment: 'Шарҳи ронанда',
-                back: 'Ба ақиб'
+                back: 'Ба ақиб',
+                rateDriver: 'Ронандаро баҳо диҳед',
+                writeReview: 'Тафсир нависед...',
+                cancel: 'Бекор кардан',
+                submit: 'Фиристодан',
+                call: 'Занг задан',
+                writeChat: 'Дар чат нависед'
             },
             search: {
                 title: 'Сафарҳои дастрас',
@@ -260,7 +354,18 @@ export const SettingsProvider = ({ children }) => {
                 loading: 'Ҷустуҷӯи сафарҳо...',
                 cheap: 'Арзонтарин',
                 early: 'Аввалин',
-                seats: 'Ҷойҳо'
+                seats: 'Ҷойҳо',
+                expensive: 'Аввал қиматҳо',
+                loadMore: 'Боркунии бештар'
+            },
+            chats: {
+                title: 'Чатҳои ман',
+                loading: 'Боргирӣ...',
+                empty: 'Шумо то ҳол чат надоред',
+                unknown: 'Номаълум',
+                noMessages: 'Паём нест',
+                partner: 'Ҳамсӯҳбат',
+                typeMessage: 'Паём нависед...'
             },
             auth: {
                 login: 'Воридшавӣ ба Yakjo',
@@ -298,7 +403,15 @@ export const SettingsProvider = ({ children }) => {
                 edit: 'Ислоҳ кардан',
                 logout: 'Баромад',
                 verified: 'Профили тасдиқшуда',
-                stats: { rating: 'Рейтинг', rides: 'Сафарҳо' }
+                stats: { rating: 'Рейтинг', rides: 'Сафарҳо' },
+                myRides: {
+                    edit: 'Тағйир додан',
+                    delete: 'Нест кардан',
+                    confirmDelete: 'Оё шумо мутмаин ҳастед, ки ин сафарро нест кардан мехоҳед?',
+                    deleted: 'Сафар нест карда шуд',
+                    errorDelete: 'Хатогӣ ҳангоми нест кардан',
+                    editTitle: 'Таҳрири сафар'
+                }
             },
             publish: {
                 title: 'Пешниҳоди сафар',
@@ -318,7 +431,26 @@ export const SettingsProvider = ({ children }) => {
                 pricePlaceholder: 'Нарх барои як ҷой',
                 commentPlaceholder: 'Тафсилотро ворид кунед: ҷои вохӯрӣ, ҳаҷми бағоҷ...',
                 success: 'Сафар бомуваффақият нашр шуд!',
-                button: 'Нашри сафар'
+                button: 'Нашри сафар',
+                errorPast: 'Шумо наметавонед сафарро дар гузашта эҷод кунед',
+                errorArrival: 'Вақти расидан наметавонад аз вақти рафтан пештар бошад',
+                errorDuplicate: 'Шумо аллакай дар ин вақт сафар доред. Вақти дигарро интихоб кунед ё сафари кӯҳнаро нест кунед.',
+                errorLimit: 'Ҳадди сафарҳои фаъол зиёд шудааст (ҳадди аксар 3) ё ҳисоби шумо маҳдуд аст.',
+                errorGeneric: 'Хатогӣ ҳангоми нашр: ',
+                errorTryLater: 'баъдтар дубора кӯшиш кунед'
+            },
+            editProfile: {
+                errorName: 'Ном бояд на камтар аз 2 ҳарф дошта бошад',
+                errorBio: 'Дар бораи ман: ҳадди аксар 500 ҳарф',
+                errorWhatsapp: 'Рақами дурусти WhatsApp ворид кунед (на камтар аз 9 рақам)',
+                errorUpdate: 'Хатогӣ ҳангоми навсозии профил: ',
+                transport: 'Нақлиёт',
+                contacts: 'Маълумот барои тамос',
+                about: 'Дар бораи ман',
+                cancel: 'Бекор кардан',
+                save: 'Захира кардан',
+                placeholderCar: 'Мисол: Toyota Camry, Сафед',
+                placeholderBio: 'Дар бораи худ, таҷрибаи ронандагӣ ва ғайра нақл кунед'
             }
         }
     };

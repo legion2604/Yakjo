@@ -66,3 +66,26 @@ type RideForm struct {
 	TotalSeats    int       `json:"totalSeats"`
 	Description   string    `json:"description"`
 }
+
+type RideInfo struct {
+	Id            int       `json:"id"`
+	From          string    `json:"from"`
+	To            string    `json:"to"`
+	DepartureTime time.Time `json:"departureTime"`
+	ArrivalTime   time.Time `json:"arrivalTime"`
+	Price         int       `json:"price"`
+	TotalSeats    int       `json:"totalSeats"`
+	Seats         int       `json:"seats"`
+	Description   string    `json:"description"`
+	Status        string    `json:"status"`
+}
+
+type ChangeRide struct {
+	From          string    `json:"from"`
+	To            string    `json:"to"`
+	DepartureTime time.Time `json:"departureTime"`
+	ArrivalTime   time.Time `json:"arrivalTime"`
+	Price         int       `json:"price"`
+	TotalSeats    int       `json:"totalSeats"`
+	Description   string    `json:"description"`
+}

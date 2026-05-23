@@ -17,6 +17,9 @@ type RideRepository interface {
 	GetRideFullInfoById(id int) (model.FullInfoRide, error)
 	GetRideContacts(id int) (model.RideContacts, error)
 	CreateRide(driverId int, ride model.RideForm) (int, error)
+	GetRidesByUserId(userId int) ([]model.RideInfo, error)
+	DeleteRideById(userId, rideId int) error
+	ChangeRideById(userId, rideId int, newData model.ChangeRide) error
 }
 
 func NewRideRepository(db *sql.DB) RideRepository {
@@ -117,6 +120,39 @@ func (r *rideRepository) CreateRide(driverId int, ride model.RideForm) (int, err
 	return id, nil
 }
 
+func (r *rideRepository) GetRidesByUserId(userId int) ([]model.RideInfo, error) {
+	rows, err := r.db.Query("SELECT id,from_city,to_city, departure_time,arrival_time,price,available_seats,description,status FROM rides WHERE driver_id = $1", userId)
+	if err != nil {
+		return []model.RideInfo{}, err
+	}
+	results := []model.RideInfo{}
+	for rows.Next() {
+		var rideInfo model.RideInfo
+		if err := rows.Scan(&rideInfo.Id, &rideInfo.From, &rideInfo.To, &rideInfo.DepartureTime, &rideInfo.ArrivalTime, &rideInfo.Price, &rideInfo.TotalSeats, &rideInfo.Description, &rideInfo.Status); err != nil {
+			return []model.RideInfo{}, err
+		}
+		results = append(results, rideInfo)
+	}
+	defer rows.Close()
+	return results, nil
+}
+
+func (r *rideRepository) DeleteRideById(userId, rideId int) error {
+	_, err := r.db.Exec("DELETE FROM rides WHERE id = $1 AND driver_id = $2", rideId, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *rideRepository) ChangeRideById(userId, rideId int, newData model.ChangeRide) error {
+	err := r.db.QueryRow("UPDATE rides SET from_city=$1, to_city=$2, departure_time=$3, arrival_time=$4, price=$5, available_seats=$6, description=$7 WHERE id=$8 AND	driver_id=$9", newData.From, newData.To, newData.DepartureTime, newData.ArrivalTime, newData.Price, newData.TotalSeats, newData.Description, rideId, userId)
+	if err != nil {
+		return err.Err()
+	}
+	return nil
+}
+
 func getOrderBy(sort string) string {
 	switch sort {
 	case "price_asc":
@@ -129,3 +165,13 @@ func getOrderBy(sort string) string {
 		return "departure_time ASC" // дефолт
 	}
 } // защита от SQL Injection
+/*
+	From          string    `json:"from"`
+	To            string    `json:"to"`
+	DepartureTime time.Time `json:"departureTime"`
+	ArrivalTime   time.Time `json:"arrivalTime"`
+	Price         int       `json:"price"`
+	TotalSeats    int       `json:"totalSeats"`
+	Description   string    `json:"description"`
+
+*/

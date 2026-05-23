@@ -25,7 +25,7 @@ func NewUsersRepository(db *sql.DB) UsersRepository {
 func (r *userRepository) GetUserById(id int) (model.User, error) {
 	var user model.User
 	user.Id = id
-	err := r.db.QueryRow("SELECT first_name,created_at,rating FROM users WHERE id = $1", id).Scan(&user.FirstName, &user.CreatedAt, &user.Rating)
+	err := r.db.QueryRow("SELECT first_name,last_name,birth_date,email,car_brand,rating FROM users WHERE id = $1", id).Scan(&user.FirstName, &user.LastName, &user.BirthDate, &user.Email, &user.CarBrand, &user.Rating)
 	if err != nil {
 		return model.User{}, err
 	}

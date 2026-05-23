@@ -2,7 +2,6 @@
     padding-top: 2rem;
     padding-bottom: 5rem;
     max-width: 1100px;
-    /* Wider container */
     margin: 0 auto;
 }
 
@@ -10,7 +9,6 @@
     font-size: 2rem;
     font-weight: 800;
     color: var(--text-main);
-    /* Dark blue-ish */
     margin-bottom: 1.5rem;
 }
 
@@ -27,7 +25,6 @@
     border-radius: var(--radius-xl);
     padding: 1.5rem;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    /* Very subtle shadow */
     border: 1px solid var(--border);
     margin-bottom: 1rem;
 }
@@ -45,12 +42,10 @@
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-
 /* --- Timeline Grid (Main) --- */
 .timeline-grid {
     display: grid;
     grid-template-columns: 60px 24px 1fr;
-    /* Time | Visual | Info */
     gap: 0 1.5rem;
 }
 
@@ -97,22 +92,18 @@
     border: 2px solid var(--text-main);
     z-index: 2;
     margin-top: 4px;
-    /* Optical alignment with text top */
 }
 
 .t-line {
     width: 2px;
     background-color: var(--text-main);
     flex: 1;
-    width: 2px;
 }
 
-/* Ensure line connects perfectly */
 .t-visual .t-line {
     position: absolute;
     top: 10px;
     bottom: -10px;
-    /* Extend to next cell */
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
@@ -123,42 +114,26 @@
     bottom: -10px;
 }
 
-/* Remove line from last node */
 .t-node.bottom+.t-line {
     display: none;
 }
 
-/* Fix for the grid logical flow - Last cell has no line */
 .t-visual:last-child .t-line {
     display: none;
 }
 
-/* Specific targeting for end node visual wrapper */
 .timeline-grid>.t-visual:nth-child(8) .t-line {
-    /* 3rd row, 2nd col is 8th child? No. 3 rows * 3 cols = 9 items. 
-   Row 1: 1, 2, 3
-   Row 2: 4, 5, 6
-   Row 3: 7, 8, 9
-   Target 8.
-*/
     display: none;
 }
-
-/* Or just don't render it in JSX for the last one */
-
 
 /* Info Column */
 .t-info {
     padding-bottom: 2rem;
 }
 
-/* Align with top */
-/* Align with top - no special style needed currently */
-
 .t-info.middle {
     padding-bottom: 0;
     min-height: 2rem;
-    /* Spacing */
 }
 
 .t-info.end {
@@ -177,12 +152,42 @@
     font-size: 0.9rem;
     color: var(--text-secondary);
     line-height: 1.4;
+    margin-top: 2px;
+}
+
+/* Блок описания поездки */
+.ride-description-block {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--border, #e2e8f0);
+}
+
+.description-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-main, #0f172a);
+    margin-bottom: 0.5rem;
+}
+
+.description-icon {
+    color: var(--text-secondary, #64748b);
+}
+
+.description-text-content {
+    font-size: 0.95rem;
+    color: var(--text-secondary, #475569);
+    line-height: 1.5;
+    margin: 0;
+    background: var(--bg-main, #f8fafc);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
 }
 
 /* --- Driver & Features Card --- */
 .driver-features-card {
-    padding: 0;
-    /* Let children handle padding, or pad wrapper */
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -193,8 +198,6 @@
     cursor: pointer;
     transition: opacity 0.2s;
 }
-
-
 
 .hoverable-row:hover {
     opacity: 0.8;
@@ -281,12 +284,7 @@
     color: var(--text-secondary);
 }
 
-/* --- Ask Question --- */
-.ask-question-btn {
-    margin-top: 2rem;
-}
-
-/* --- Sidebar (Booking) --- */
+/* --- Sidebar --- */
 .summary-card {
     background: var(--bg-card);
     border-radius: var(--radius-xl);
@@ -314,7 +312,6 @@
     align-items: flex-start;
     gap: 0.75rem;
     position: relative;
-    /* font-size smaller */
     font-size: 0.95rem;
 }
 
@@ -331,17 +328,15 @@
     background: white;
     border: 2px solid var(--text-main);
     z-index: 2;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 .mini-visual.top::after {
     content: '';
     position: absolute;
     left: 60px;
-    /* Center of visual (8px width -> 4px center, line is 2px width -> left 3px) */
     top: 10px;
-    height: 50px;
-    /* height to next node roughly */
+    height: 30px;
     width: 2px;
     background: var(--text-main);
     z-index: 1;
@@ -364,57 +359,6 @@
     margin: 1rem 0;
 }
 
-/* Mini Driver */
-.mini-driver-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.mini-driver-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.driver-avatar-xs {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--bg-main);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-}
-
-.driver-avatar-xs img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.mini-driver-text {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.9rem;
-}
-
-.mini-driver-text .name {
-    color: var(--text-main);
-    font-weight: 500;
-}
-
-.mini-driver-text .rating {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-
 /* Price Section */
 .price-row {
     display: flex;
@@ -434,85 +378,7 @@
     color: var(--text-main);
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .details-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .summary-card {
-        position: static;
-        box-shadow: none;
-        border: none;
-        background: transparent;
-        padding: 0;
-    }
-
-    /* Make button fixed bottom on mobile? Optional, but better for conversion */
-    .phone-reveal-box {
-        background-color: var(--bg-main);
-        padding: 1rem;
-        border-radius: var(--radius-md);
-        text-align: center;
-        border: 1px solid var(--primary);
-        animation: fadeIn 0.3s ease;
-    }
-
-    .phone-number-link {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--primary);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-}
-
-.phone-reveal-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 1.15rem 1.5rem;
-    background-color: var(--primary);
-    color: white;
-    border-radius: var(--radius-lg);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.1rem;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.25);
-    gap: 0.75rem;
-    margin-top: 2.5rem !important;
-}
-
-.phone-reveal-button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
-}
-
-.pill-button {
-    display: flex !important;
-    width: 100% !important;
-    border-radius: var(--radius-lg) !important;
-    padding: 1.15rem 1.5rem !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.25);
-    transition: all 0.2s ease !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin-top: 2.5rem !important;
-}
-
-.pill-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
-}
-
-/* --- Contact Buttons & Rating --- */
+/* --- Единые Кнопки Контактов с Ровным Выравниванием --- */
 .contact-buttons-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -525,41 +391,43 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.75rem;
-    border-radius: var(--radius-md);
-    font-weight: 500;
-    transition: all 0.2s;
+    padding: 1rem 1.5rem; /* Одинаковые внутренние отступы везде */
+    border-radius: var(--radius-lg, 12px);
+    font-weight: 700;
+    font-size: 1.05rem;
+    transition: all 0.2s ease;
     text-decoration: none;
-    color: white;
-    font-size: 0.95rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15);
+    border: none;
+    cursor: pointer;
+    line-height: 1; /* Жёстко сбрасываем высоту строки для ровного текста */
+}
+
+/* Стилизация первой большой кнопки до клика */
+.initial-contact-btn {
+    width: 100%;
 }
 
 .contact-btn:hover {
-    opacity: 0.9;
+    opacity: 0.95;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-.btn-whatsapp {
-    background-color: #25D366;
+/* Иконки внутри кнопок теперь сидят ровно по центру */
+.contact-btn svg {
+    display: inline-block;
+    flex-shrink: 0;
+    margin: 0;
 }
 
-.btn-telegram {
-    background-color: #0088cc;
-}
-
-.btn-phone {
-    background-color: var(--primary-color);
-}
-
-.btn-chat {
-    background-color: var(--secondary-color);
-}
-
-.full-width {
-    grid-column: span 2;
-}
+.btn-whatsapp { background-color: #25D366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2); }
+.btn-telegram { background-color: #0088cc; box-shadow: 0 4px 12px rgba(0, 136, 204, 0.2); }
+.btn-phone { background-color: #007AFF; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2); }
+.btn-chat { background-color: #6366F1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+.full-width { grid-column: span 2; }
+.mt-6 { margin-top: 1.5rem !important; }
 
 /* Modal */
 .rating-modal-overlay {
@@ -574,7 +442,6 @@
     align-items: center;
     z-index: 1000;
     backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s;
 }
 
 .rating-modal {
@@ -602,10 +469,19 @@
     transition: transform 0.2s, color 0.2s;
 }
 
-.star-btn:hover {
-    transform: scale(1.2);
-}
+.star-btn:hover { transform: scale(1.2); }
+.star-btn.active { color: #FFB800; }
 
-.star-btn.active {
-    color: #FFB800;
+/* Адаптивность */
+@media (max-width: 900px) {
+    .details-layout {
+        grid-template-columns: 1fr;
+    }
+    .summary-card {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+    }
 }

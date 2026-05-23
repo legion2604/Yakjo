@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import RideDetailsPage from './pages/RideDetailsPage';
 import PublishPage from './pages/PublishPage';
+import EditRidePage from './pages/EditRidePage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
 import VerifyOtpPage from './pages/VerifyOtpPage';
@@ -44,6 +45,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/ride/:id/edit"
+                  element={
+                    <ProtectedRoute>
+                      <EditRidePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/profile"
                   element={
                     <ProtectedRoute>
@@ -51,6 +60,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route path="/profile/:id" element={<ProfilePage />} />
                 <Route
                   path="/profile/edit"
                   element={

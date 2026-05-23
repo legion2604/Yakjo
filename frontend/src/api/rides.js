@@ -40,5 +40,26 @@ export const ridesApi = {
      */
     getContacts: (rideId) => {
         return api.get(`/rides/${Number(rideId)}/contacts`);
+    },
+
+    /**
+     * Получение поездок текущего пользователя
+     */
+    getMyRides: () => {
+        return api.get('/rides/my');
+    },
+
+    /**
+     * Удаление поездки
+     */
+    delete: (id) => {
+        return api.delete(`/rides/${Number(id)}`);
+    },
+
+    /**
+     * Обновление поездки
+     */
+    update: (id, data) => {
+        return api.put(`/rides/${Number(id)}`, data);
     }
 };

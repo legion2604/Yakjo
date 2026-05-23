@@ -15,7 +15,10 @@ type RideService interface {
 	GetRides(req model.RidesRequest) ([]model.Ride, int, error)
 	GetRideFullInfoById(id int) (model.FullInfoRide, error)
 	GetRideContacts(id int) (model.RideContacts, error)
+	GetRidesByUserId(userId int) ([]model.RideInfo, error)
 	CreateRide(driverId int, ride model.RideForm) (int, error)
+	DeleteRideById(userId, rideId int) error
+	ChangeRideById(userId, rideId int, newData model.ChangeRide) error
 }
 
 func NewRideService(postgres postgres.RideRepository) RideService {
@@ -73,6 +76,14 @@ func (s *ridesService) GetRideContacts(id int) (model.RideContacts, error) {
 	return res, nil
 }
 
+func (s *ridesService) GetRidesByUserId(userId int) ([]model.RideInfo, error) {
+	rides, err := s.postgres.GetRidesByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	return rides, err
+}
+
 func (s *ridesService) CreateRide(driverId int, ride model.RideForm) (int, error) {
 	if ride.TotalSeats < 1 || ride.DepartureTime.Before(time.Now()) {
 		return 0, errors.New("validation error (seats < 1, past date)")
@@ -80,9 +91,28 @@ func (s *ridesService) CreateRide(driverId int, ride model.RideForm) (int, error
 	if !ride.ArrivalTime.IsZero() && ride.ArrivalTime.Before(ride.DepartureTime) {
 		return 0, errors.New("validation error (arrival time before departure time)")
 	}
+	if ride.To == ride.From {
+		return 0, errors.New("validation error (to is empty)")
+	}
 	id, err := s.postgres.CreateRide(driverId, ride)
 	if err != nil {
 		return 0, err
 	}
 	return id, nil
+}
+
+func (s *ridesService) DeleteRideById(userId, rideId int) error {
+	err := s.postgres.DeleteRideById(userId, rideId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *ridesService) ChangeRideById(userId, rideId int, newData model.ChangeRide) error {
+	err := s.postgres.ChangeRideById(userId, rideId, newData)
+	if err != nil {
+		return err
+	}
+	return nil
 }

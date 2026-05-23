@@ -34,12 +34,12 @@ func NewAuthService(postgres postgres.AuthRepository, redis redis.AuthRepository
 }
 
 func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) error {
-	if len(phone.Phone) != 9 || (len(phone.Phone) == 11 && !strings.HasPrefix(phone.Phone, "992") || !utils.IsNumeric(phone.Phone)) {
-		return errors.New("invalid phone number")
-	}
-
 	if !strings.HasPrefix(phone.Phone, "992") {
 		phone.Phone = "992" + phone.Phone
+	}
+
+	if len(phone.Phone) < 9 || len(phone.Phone) > 12 || !utils.IsNumeric(phone.Phone) {
+		return errors.New("invalid phone number")
 	}
 
 	code := otp.GenerateOTP()

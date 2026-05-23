@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +23,9 @@ type RidesHandler interface {
 	GetRideById(ctx *gin.Context)
 	GetRideContacts(ctx *gin.Context)
 	CreateRide(ctx *gin.Context)
+	GetRidesByUserId(ctx *gin.Context)
+	DeleteRideById(ctx *gin.Context)
+	ChangeRideById(ctx *gin.Context)
 }
 
 func NewRidesHandler(s service.RideService, security security.Security) RidesHandler {
@@ -140,6 +144,10 @@ func (h *ridesHandler) CreateRide(ctx *gin.Context) {
 	log.Println(driverId)
 	id, err := h.s.CreateRide(driverId, req)
 	if err != nil {
+		if strings.HasPrefix(err.Error(), "validation error") {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -147,4 +155,52 @@ func (h *ridesHandler) CreateRide(ctx *gin.Context) {
 		"id":     id,
 		"status": "created",
 	})
+}
+
+func (h *ridesHandler) GetRidesByUserId(ctx *gin.Context) {
+	userId := middleware.GetUserIDFromContext(ctx)
+	log.Println(userId)
+	res, err := h.s.GetRidesByUserId(userId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *ridesHandler) DeleteRideById(ctx *gin.Context) {
+	userId := middleware.GetUserIDFromContext(ctx)
+	rideId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = h.s.DeleteRideById(userId, rideId)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}
+
+func (h *ridesHandler) ChangeRideById(ctx *gin.Context) {
+	userId := middleware.GetUserIDFromContext(ctx)
+	rideId, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	var req model.ChangeRide
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = h.s.ChangeRideById(userId, rideId, req)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, req)
 }

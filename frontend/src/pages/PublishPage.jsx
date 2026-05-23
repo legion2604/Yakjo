@@ -7,6 +7,19 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import './PublishPage.css';
 
+const CITIES = [
+    'Душанбе',
+    'Худжанд',
+    'Бохтар',
+    'Куляб',
+    'Истаравшан',
+    'Вахдат',
+    'Турсунзаде',
+    'Исфара',
+    'Пенджикент',
+    'Хорог'
+];
+
 const PublishPage = () => {
     const navigate = useNavigate();
     const { t } = useSettings();
@@ -34,7 +47,7 @@ const PublishPage = () => {
         // Validation: Past date
         const selectedDate = new Date(`${formData.date}T${formData.time}`);
         if (selectedDate < new Date()) {
-            alert('Нельзя создать поездку в прошлом времени');
+            alert(t('publish.errorPast'));
             return;
         }
 
@@ -42,7 +55,7 @@ const PublishPage = () => {
         if (formData.arrivalDate && formData.arrivalTime) {
             arrivalSelectedDate = new Date(`${formData.arrivalDate}T${formData.arrivalTime}`);
             if (arrivalSelectedDate < selectedDate) {
-                alert('Время прибытия не может быть раньше времени отправления');
+                alert(t('publish.errorArrival'));
                 return;
             }
         }
@@ -66,11 +79,11 @@ const PublishPage = () => {
             console.error('Failed to publish ride:', error);
 
             if (error.message && error.message.includes('409')) {
-                alert('У вас уже есть поездка в это время. Выберите другое время или удалите старую поездку.');
+                alert(t('publish.errorDuplicate'));
             } else if (error.message && error.message.includes('403')) {
-                alert('Превышен лимит активных поездок (макс. 3) или ваш аккаунт ограничен.');
+                alert(t('publish.errorLimit'));
             } else {
-                alert('Ошибка при публикации: ' + (error.message || 'попробуйте позже'));
+                alert(t('publish.errorGeneric') + (error.message || t('publish.errorTryLater')));
             }
         } finally {
             setLoading(false);
@@ -90,20 +103,24 @@ const PublishPage = () => {
                         <h3>{t('publish.route')}</h3>
                         <div className="input-group">
                             <Input
+                                type="select"
+                                options={CITIES}
                                 icon={MapPin}
                                 name="from"
                                 value={formData.from}
                                 onChange={handleChange}
-                                placeholder={t('publish.placeholderFrom')}
+                                placeholder={t('publish.placeholderFrom') || 'Выберите город отправления'}
                                 label={t('publish.labelFrom')}
                                 required
                             />
                             <Input
+                                type="select"
+                                options={CITIES}
                                 icon={MapPin}
                                 name="to"
                                 value={formData.to}
                                 onChange={handleChange}
-                                placeholder={t('publish.placeholderTo')}
+                                placeholder={t('publish.placeholderTo') || 'Выберите город назначения'}
                                 label={t('publish.labelTo')}
                                 required
                             />

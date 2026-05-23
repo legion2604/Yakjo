@@ -1,28 +1,100 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Shield, LogOut, Camera, User as UserIcon, Mail, Calendar, Car } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import { usersApi } from '../api/users';
+import { ridesApi } from '../api/rides';
 import Button from '../components/ui/Button';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
+    const { id } = useParams();
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user: currentUser, logout } = useAuth();
     const { t } = useSettings();
+    const [publicUser, setPublicUser] = useState(null);
+    const [myRides, setMyRides] = useState([]);
+    const [loadingRides, setLoadingRides] = useState(false);
+    const [loading, setLoading] = useState(!!id);
+
+    const isOwnProfile = !id || (currentUser && currentUser.id === parseInt(id));
+
+    useEffect(() => {
+        if (id && !isOwnProfile) {
+            const fetchUser = async () => {
+                setLoading(true);
+                try {
+                    const data = await usersApi.getById(id);
+                    setPublicUser(data);
+                } catch (error) {
+                    console.error("Failed to fetch user:", error);
+                    setPublicUser(null);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchUser();
+        } else {
+            setLoading(false);
+            if (isOwnProfile) {
+                fetchMyRides();
+            }
+        }
+    }, [id, isOwnProfile]);
+
+    const fetchMyRides = async () => {
+        setLoadingRides(true);
+        try {
+            const data = await ridesApi.getMyRides();
+            setMyRides(data || []);
+        } catch (error) {
+            console.error("Failed to fetch my rides:", error);
+        } finally {
+            setLoadingRides(false);
+        }
+    };
+
+    const handleDeleteRide = async (rideId) => {
+        if (window.confirm(t('profile.myRides.confirmDelete'))) {
+            try {
+                await ridesApi.delete(rideId);
+                alert(t('profile.myRides.deleted'));
+                setMyRides(myRides.filter(r => r.id !== rideId));
+            } catch (error) {
+                console.error("Failed to delete ride:", error);
+                alert(t('profile.myRides.errorDelete'));
+            }
+        }
+    };
+
+    const displayUser = isOwnProfile ? currentUser : publicUser;
+
+    if (loading) {
+        return <div className="container mt-8 text-center">{t('chats.loading') || 'Загрузка...'}</div>;
+    }
+
+    if (!displayUser) {
+        return <div className="container mt-8 text-center">Профиль не найден</div>;
+    }
+
+    const formatBirthDate = (dateStr) => {
+        if (!dateStr) return '—';
+        return dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+    };
 
     // Fallback data if user is missing some fields
     const userData = {
-        firstName: user?.firstName || '...',
-        lastName: user?.lastName || '...',
-        phone: user?.phone || '...',
-        email: user?.email || '—',
-        birthDate: user?.birthDate || '—',
-        carBrand: user?.carBrand || '—',
-        bio: user?.bio || '',
-        avatarUrl: user?.avatarUrl || null,
-        rating: user?.rating || 5.0,
-        isVerified: user?.isVerified ?? true
+        firstName: displayUser.firstName || '...',
+        lastName: displayUser.lastName || '...',
+        phone: displayUser.phone || '...',
+        email: displayUser.email || '—',
+        birthDate: formatBirthDate(displayUser.birthDate),
+        carBrand: displayUser.carBrand || '—',
+        bio: displayUser.bio || '',
+        avatarUrl: displayUser.avatarUrl || null,
+        rating: displayUser.rating || 5.0,
+        isVerified: displayUser.isVerified ?? true
     };
 
     const handleLogout = () => {
@@ -43,9 +115,11 @@ const ProfilePage = () => {
                                     <span>{userData.firstName[0]}</span>
                                 )}
                             </div>
-                            <button className="edit-avatar-btn">
-                                <Camera size={16} />
-                            </button>
+                            {isOwnProfile && (
+                                <button className="edit-avatar-btn">
+                                    <Camera size={16} />
+                                </button>
+                            )}
                         </div>
 
                         <h2 className="profile-name">{userData.firstName} {userData.lastName}</h2>
@@ -69,12 +143,14 @@ const ProfilePage = () => {
                         </div>
                     </div>
 
-                    <div className="sidebar-menu">
-                        <Button variant="ghost" className="menu-btn logout-btn" onClick={handleLogout}>
-                            <LogOut size={20} />
-                            <span>{t('profile.logout')}</span>
-                        </Button>
-                    </div>
+                    {isOwnProfile && (
+                        <div className="sidebar-menu">
+                            <Button variant="ghost" className="menu-btn logout-btn" onClick={handleLogout}>
+                                <LogOut size={20} />
+                                <span>{t('profile.logout')}</span>
+                            </Button>
+                        </div>
+                    )}
                 </aside>
 
                 <main className="profile-content">
@@ -101,16 +177,16 @@ const ProfilePage = () => {
                                 <label><Car size={14} /> {t('register.carBrand')}</label>
                                 <div className="info-value">{userData.carBrand}</div>
                             </div>
-                            {user?.whatsapp && (
+                            {isOwnProfile && displayUser?.whatsapp && (
                                 <div className="info-item">
                                     <label>WhatsApp</label>
-                                    <div className="info-value">{user.whatsapp}</div>
+                                    <div className="info-value">{displayUser.whatsapp}</div>
                                 </div>
                             )}
-                            {user?.telegram && (
+                            {isOwnProfile && displayUser?.telegram && (
                                 <div className="info-item">
                                     <label>Telegram</label>
-                                    <div className="info-value">{user.telegram}</div>
+                                    <div className="info-value">{displayUser.telegram}</div>
                                 </div>
                             )}
                         </div>
@@ -122,25 +198,52 @@ const ProfilePage = () => {
                             </div>
                         )}
 
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="mt-6"
-                            onClick={() => navigate('/profile/edit')}
-                        >
-                            {t('profile.edit')}
-                        </Button>
+                        {isOwnProfile && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="mt-6"
+                                onClick={() => navigate('/profile/edit')}
+                            >
+                                {t('profile.edit')}
+                            </Button>
+                        )}
                     </div>
 
-                    <div className="section-card">
-                        <h3 className="section-title">{t('profile.trips')}</h3>
-                        <div className="empty-trips">
-                            <p>{t('profile.noTrips')}</p>
-                            <Button variant="primary" size="sm" className="mt-4" onClick={() => navigate('/publish')}>
-                                {t('publish.button')}
-                            </Button>
+                    {isOwnProfile && (
+                        <div className="section-card">
+                            <h3 className="section-title">{t('profile.trips')}</h3>
+                            {loadingRides ? (
+                                <div className="text-center p-4">{t('chats.loading') || 'Загрузка...'}</div>
+                            ) : myRides.length === 0 ? (
+                                <div className="empty-trips">
+                                    <p>{t('profile.noTrips')}</p>
+                                    <Button variant="primary" size="sm" className="mt-4" onClick={() => navigate('/publish')}>
+                                        {t('publish.button')}
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="my-rides-list">
+                                    {myRides.map((ride) => (
+                                        <div key={ride.id} className="my-ride-card" style={{ border: '1px solid #eee', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+                                            <div style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{ride.from} → {ride.to}</div>
+                                            <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1rem' }}>
+                                                {ride.date} {ride.time} | {ride.price} {t('publish.labelPrice').includes('сом') ? 'с' : 's'}
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                <Button size="sm" variant="outline" onClick={() => navigate(`/ride/${ride.id}/edit`)}>
+                                                    {t('profile.myRides.edit')}
+                                                </Button>
+                                                <Button size="sm" variant="ghost" style={{ color: 'red' }} onClick={() => handleDeleteRide(ride.id)}>
+                                                    {t('profile.myRides.delete')}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                    </div>
+                    )}
                 </main>
             </div>
         </div>

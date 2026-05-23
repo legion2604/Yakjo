@@ -85,14 +85,14 @@ const ChatsPage = () => {
 
     return (
         <div className="chats-page container">
-            <h1 className="page-title">Мои чаты</h1>
+            <h1 className="page-title">{t('chats.title')}</h1>
             <div className="chats-list">
                 {loading ? (
-                    <div className="text-center p-4">Загрузка...</div>
+                    <div className="text-center p-4">{t('chats.loading')}</div>
                 ) : chats.length === 0 ? (
                     <div className="empty-state">
                         <MessageCircle size={48} className="text-secondary" />
-                        <h3>У вас пока нет чатов</h3>
+                        <h3>{t('chats.empty')}</h3>
                     </div>
                 ) : (
                     chats.map(chat => (
@@ -106,11 +106,11 @@ const ChatsPage = () => {
                             </div>
                             <div className="chat-details">
                                 <div className="chat-header">
-                                    <span className="chat-name">{chat.partner?.firstName || 'Неизвестный'}</span>
+                                    <span className="chat-name">{chat.partner?.firstName || t('chats.unknown')}</span>
                                     <span className="chat-time">{formatTime(chat.lastMessage?.createdAt)}</span>
                                 </div>
                                 <div className="chat-message">
-                                    <span className="message-preview">{chat.lastMessage?.content || 'Нет сообщений'}</span>
+                                    <span className="message-preview">{chat.lastMessage?.content || t('chats.noMessages')}</span>
                                     {chat.unreadCount > 0 && (
                                         <div className="unread-badge">{chat.unreadCount}</div>
                                     )}

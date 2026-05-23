@@ -1,49 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Circle, Calendar, User } from 'lucide-react';
+import { Circle, Calendar, User, ArrowRight, Star } from 'lucide-react';
 import { ridesApi } from '../api/rides';
-import RideCard from '../components/RideCard';
 import Button from '../components/ui/Button';
 import { useSettings } from '../context/SettingsContext';
 import './SearchPage.css';
 import './HomePage.css';
 
-// Fallback Mock Data for UI stability if API fails
 const MOCK_RIDES = [
     {
         id: 1,
         from: 'Душанбе',
         to: 'Худжанд',
-        departureTime: '2024-02-21T08:00:00',
-        arrivalTime: '2024-02-21T12:30:00',
-        price: 120,
+        departureTime: '2026-05-24T08:00:00',
+        arrivalTime: '2026-05-24T12:30:00',
+        price: 140,
         availableSeats: 3,
-        description: 'Еду аккуратно, машина чистая.',
-        driver: { firstName: 'Фарход', rating: 4.8, avatarUrl: null, phone: '+992 90 123 4567' },
+        description: 'Еду аккуратно, машина чистая, едем через Шахристан.',
+        driver: { firstName: 'Фарход', rating: 4.9, avatarUrl: null, phone: '+992 90 123 4567' },
         car: 'Toyota Camry'
     },
     {
         id: 2,
         from: 'Душанбе',
-        to: 'Худжанд',
-        departureTime: '2024-02-21T09:30:00',
-        arrivalTime: '2024-02-21T14:00:00',
-        price: 100,
+        to: 'Куляб',
+        departureTime: '2026-05-24T14:30:00',
+        arrivalTime: '2026-05-24T17:00:00',
+        price: 80,
         availableSeats: 2,
-        description: 'Комфортная поездка, есть кондиционер.',
-        driver: { firstName: 'Алишер', rating: 4.5, avatarUrl: null, phone: '+992 90 987 6543' },
-        car: 'Opel Astra'
+        description: 'Комфортная поездка, кондиционер работает.',
+        driver: { firstName: 'Jamoliddin', rating: 4.8, avatarUrl: null, phone: '+992 90 987 6543' },
+        car: 'Hyundai Sonata'
     }
 ];
 
 const SearchPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { t } = useSettings();
+    const { t, language } = useSettings();
     const [rides, setRides] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Form state
     const [formState, setFormState] = useState({
         from: searchParams.get('from') || '',
         to: searchParams.get('to') || '',
@@ -55,7 +52,6 @@ const SearchPage = () => {
         const fetchRides = async () => {
             setLoading(true);
             try {
-                // Fetch from real backend
                 const currentPage = parseInt(searchParams.get('page') || '1');
                 const params = {
                     from: searchParams.get('from'),
@@ -76,7 +72,6 @@ const SearchPage = () => {
                 }
             } catch (error) {
                 console.error('Search failed:', error);
-                // Fallback for demo
                 const currentPage = parseInt(searchParams.get('page') || '1');
                 const from = searchParams.get('from');
                 const to = searchParams.get('to');
@@ -90,8 +85,7 @@ const SearchPage = () => {
                 if (currentPage === 1) {
                     setRides(fallbackRides);
                 } else {
-                    // For mock data, we don't really have more pages, so just do nothing or append empty
-                    // In a real app, this wouldn't be hit unless API fails on page 2+
+                    // Fail-safe
                 }
             } finally {
                 setLoading(false);
@@ -112,10 +106,11 @@ const SearchPage = () => {
 
     return (
         <div className="search-page container">
+            {/* Поисковая панель на всю ширину */}
             <div className="search-header-container">
                 <form className="search-bar compact-search-bar" onSubmit={handleSearchUpdate}>
                     <div className="search-field location-field">
-                        <Circle className="field-icon search-icon-circle" size={18} />
+                        <Circle className="field-icon search-icon-circle" size={20} />
                         <input
                             type="text"
                             placeholder={t('hero.placeholderFrom')}
@@ -128,7 +123,7 @@ const SearchPage = () => {
                     <div className="field-divider"></div>
 
                     <div className="search-field location-field">
-                        <Circle className="field-icon search-icon-circle" size={18} />
+                        <Circle className="field-icon search-icon-circle" size={20} />
                         <input
                             type="text"
                             placeholder={t('hero.placeholderTo')}
@@ -141,26 +136,24 @@ const SearchPage = () => {
                     <div className="field-divider"></div>
 
                     <div className="search-field date-field">
-                        <Calendar className="field-icon" size={18} />
+                        <Calendar className="field-icon" size={20} />
                         <input
                             type="date"
                             value={formState.date}
                             onChange={(e) => setFormState({ ...formState, date: e.target.value })}
-                            placeholder={t('hero.placeholderDate')}
                         />
                     </div>
 
                     <div className="field-divider"></div>
 
                     <div className="search-field seats-field">
-                        <User className="field-icon" size={18} />
+                        <User className="field-icon" size={20} />
                         <input
                             type="number"
                             min="1"
                             max="8"
                             value={formState.seats}
                             onChange={(e) => setFormState({ ...formState, seats: e.target.value })}
-                            placeholder={t('hero.placeholderSeats')}
                         />
                     </div>
 
@@ -171,9 +164,10 @@ const SearchPage = () => {
             </div>
 
             <div className="search-layout">
+                {/* Левый Сайдбар Сортировки */}
                 <aside className="filters-sidebar">
                     <div className="filters-header">
-                        <h3>{t('search.sortBy')}</h3>
+                        <h3>{language === 'tj' ? 'Тартиб додан' : 'Сортировка'}</h3>
                     </div>
                     <div className="filter-group">
                         <select
@@ -187,37 +181,89 @@ const SearchPage = () => {
                         >
                             <option value="price_asc">{t('search.cheap')}</option>
                             <option value="time_asc">{t('search.early')}</option>
-                            <option value="price_desc">Сначала дорогие</option>
+                            <option value="price_desc">{t('search.expensive')}</option>
                         </select>
-                    </div>
-
-                    <div className="filters-header mt-4">
-                        <h3>{t('search.price')}</h3>
-                    </div>
-                    <div className="filter-group">
-                        <input type="range" min="0" max="500" className="w-full" />
                     </div>
                 </aside>
 
+                {/* Основной список результатов */}
                 <main className="results-list">
                     <h2 className="results-title">
-                        {searchParams.get('date') ? `${t('search.title')} - ${new Date(searchParams.get('date')).toLocaleDateString()}` : t('search.title')}
+                        {searchParams.get('date') ? `${t('search.title')} — ${new Date(searchParams.get('date')).toLocaleDateString()}` : t('search.title')}
                     </h2>
 
                     {loading && rides.length === 0 ? (
-                        <div className="loading-state">{t('search.loading')}</div>
+                        <div className="loading-state-spinner"><div className="spinner"></div></div>
                     ) : (
                         <>
-                            {rides.map(ride => (
-                                <RideCard
-                                    key={ride.id}
-                                    ride={ride}
-                                    onSelect={handleSelectRide}
-                                />
-                            ))}
+                            <div className="rides-grid-container">
+                                {rides.map(ride => (
+                                    <div key={ride.id} className="ride-card" onClick={() => handleSelectRide(ride.id)}>
+                                        
+                                        {/* Левая сторона карточки */}
+                                        <div className="ride-card-main">
+                                            {/* Первая строка: Маршрут */}
+                                            <div className="ride-timeline">
+                                                <div className="time-block">
+                                                    <span className="time">
+                                                        {new Date(ride.departureTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                    </span>
+                                                    <span className="city">{ride.from}</span>
+                                                </div>
+                                                <div className="route-line-indicator">
+                                                    <div className="indicator-dot"></div>
+                                                    <div className="indicator-line"></div>
+                                                    <div className="indicator-dot filled"></div>
+                                                </div>
+                                                <div className="time-block">
+                                                    <span className="time">
+                                                        {new Date(ride.arrivalTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                    </span>
+                                                    <span className="city">{ride.to}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Вторая строка: Водитель и Машина */}
+                                            <div className="ride-driver-car-info">
+                                                <div className="driver-profile">
+                                                    <div className="avatar-placeholder">{ride.driver.firstName[0]}</div>
+                                                    <div>
+                                                        <h4 className="driver-name">{ride.driver.firstName}</h4>
+                                                        <div className="driver-rating">
+                                                            <Star size={14} fill="currentColor" />
+                                                            <span>{ride.driver.rating || 0}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {ride.car && (
+                                                    <div className="car-tag">
+                                                        <span>{ride.car}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Правая сторона карточки */}
+                                        <div className="ride-card-sidebar">
+                                            <div className="price-details-box">
+                                                <div className="price-tag">
+                                                    {ride.price} {language === 'tj' ? 'с.' : 'сомони'}
+                                                </div>
+                                                <div className="seats-tag">
+                                                    {language === 'tj' ? `Ҷои холи: ${ride.availableSeats}` : `Свободно: ${ride.availableSeats}`}
+                                                </div>
+                                            </div>
+                                            <button className="book-btn-action">
+                                                <ArrowRight size={20} />
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                ))}
+                            </div>
 
                             {rides.length > 0 && rides.length % 10 === 0 && (
-                                <div className="flex justify-center mt-6">
+                                <div className="flex justify-center mt-8">
                                     <Button
                                         variant="ghost"
                                         isLoading={loading}
@@ -226,7 +272,7 @@ const SearchPage = () => {
                                             setSearchParams({ ...formState, page: nextPage });
                                         }}
                                     >
-                                        Загрузить еще
+                                        {t('search.loadMore')}
                                     </Button>
                                 </div>
                             )}

@@ -3,7 +3,10 @@ package model
 type User struct {
 	Id          int      `json:"id"`
 	FirstName   string   `json:"firstName"`
-	CreatedAt   string   `json:"createdAt"`
+	LastName    string   `json:"lastName"`
+	BirthDate   string   `json:"birthDate"`
+	Email       string   `json:"email"`
+	CarBrand    string   `json:"carBrand"`
 	Rating      float64  `json:"rating"`
 	ReviewCount int      `json:"reviewCount"`
 	Reviews     []Review `json:"reviews"`

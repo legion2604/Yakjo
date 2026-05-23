@@ -27,10 +27,15 @@ const EditProfilePage = () => {
 
     useEffect(() => {
         if (user) {
+            const formatBirthDate = (dateStr) => {
+                if (!dateStr) return '';
+                return dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+            };
+
             setFormData({
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
-                birthDate: user.birthDate || '',
+                birthDate: formatBirthDate(user.birthDate),
                 email: user.email || '',
                 carBrand: user.carBrand || '',
                 bio: user.bio || '',
@@ -50,19 +55,19 @@ const EditProfilePage = () => {
 
         // Validation
         if (formData.firstName.trim().length < 2) {
-            alert('Имя должно содержать минимум 2 символа');
+            alert(t('editProfile.errorName'));
             return;
         }
 
         if (formData.bio && formData.bio.length > 500) {
-            alert('О себе: максимум 500 символов');
+            alert(t('editProfile.errorBio'));
             return;
         }
 
         // WhatsApp: digits only
         const whatsappDigits = formData.whatsapp.replace(/\D/g, '');
         if (formData.whatsapp && whatsappDigits.length < 9) {
-            alert('Введите корректный номер WhatsApp (минимум 9 цифр)');
+            alert(t('editProfile.errorWhatsapp'));
             return;
         }
 
@@ -80,7 +85,7 @@ const EditProfilePage = () => {
             navigate('/profile');
         } catch (error) {
             console.error('Failed to update profile:', error);
-            alert('Ошибка при обновлении профиля: ' + (error.message || 'попробуйте позже'));
+            alert(t('editProfile.errorUpdate') + (error.message || t('publish.errorTryLater')));
         } finally {
             setLoading(false);
         }
@@ -131,19 +136,19 @@ const EditProfilePage = () => {
                     </div>
 
                     <div className="form-section">
-                        <h3>Транспорт</h3>
+                        <h3>{t('editProfile.transport')}</h3>
                         <Input
                             icon={Car}
                             name="carBrand"
                             value={formData.carBrand}
                             onChange={handleChange}
                             label={t('register.carBrand')}
-                            placeholder="Например: Toyota Camry, Белый"
+                            placeholder={t('editProfile.placeholderCar')}
                         />
                     </div>
 
                     <div className="form-section">
-                        <h3>Контакты для связи</h3>
+                        <h3>{t('editProfile.contacts')}</h3>
                         <Input
                             icon={Smartphone}
                             name="whatsapp"
@@ -163,23 +168,23 @@ const EditProfilePage = () => {
                     </div>
 
                     <div className="form-section">
-                        <h3>О себе</h3>
+                        <h3>{t('editProfile.about')}</h3>
                         <textarea
                             className="textarea-field"
                             name="bio"
                             value={formData.bio}
                             onChange={handleChange}
                             rows="4"
-                            placeholder="Расскажите немного о себе, стаже вождения и т.д."
+                            placeholder={t('editProfile.placeholderBio')}
                         ></textarea>
                     </div>
 
                     <div className="form-actions">
                         <Button type="button" variant="ghost" onClick={() => navigate('/profile')}>
-                            Отмена
+                            {t('editProfile.cancel')}
                         </Button>
                         <Button type="submit" isLoading={loading}>
-                            Сохранить
+                            {t('editProfile.save')}
                         </Button>
                     </div>
                 </form>

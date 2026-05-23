@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Phone, Star, Car, ChevronRight, MessageCircle, CheckCircle, Users, Smartphone, Send } from 'lucide-react';
+import { Phone, Star, Car, ChevronRight, MessageCircle, CheckCircle, Users, Smartphone, Send, FileText } from 'lucide-react';
 import { ridesApi } from '../api/rides';
 import { usersApi } from '../api/users';
-import { wsClient } from '../api/socket';
 import Button from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
@@ -19,7 +18,7 @@ const RatingModal = ({ isOpen, onClose, onSubmit }) => {
     return (
         <div className="rating-modal-overlay" onClick={onClose}>
             <div className="rating-modal" onClick={e => e.stopPropagation()}>
-                <h3 className="text-xl font-bold text-center mb-4">Оценить водителя</h3>
+                <h3 className="text-xl font-bold text-center mb-4">{t('ride.rateDriver')}</h3>
                 <div className="stars-input">
                     {[1, 2, 3, 4, 5].map((star) => (
                         <button
@@ -34,15 +33,15 @@ const RatingModal = ({ isOpen, onClose, onSubmit }) => {
                 </div>
                 <textarea
                     className="textarea-field mb-4 w-full"
-                    placeholder="Напишите отзыв..."
+                    placeholder={t('ride.writeReview')}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows="3"
                 />
                 <div className="flex gap-2 justify-end">
-                    <Button variant="ghost" onClick={onClose}>Отмена</Button>
+                    <Button variant="ghost" onClick={onClose}>{t('ride.cancel')}</Button>
                     <Button onClick={() => onSubmit(rating, comment)} disabled={rating === 0}>
-                        Отправить
+                        {t('ride.submit')}
                     </Button>
                 </div>
             </div>
@@ -72,29 +71,30 @@ const RideDetailsPage = () => {
                 // Fallback mock data
                 setRide({
                     id: 1,
-                    from: 'Москва',
-                    fromAddress: 'Ул. Павла Корчагина, 14',
-                    to: 'Кудрово',
-                    toAddress: 'Ул. Пражская, 12, Ленинградская обл.',
-                    departureTime: '2024-01-31T08:00:00',
-                    arrivalTime: '2024-01-31T15:20:00',
-                    duration: '7ч 20',
-                    price: 2280,
+                    from: 'Душанбе',
+                    fromAddress: 'Автовокзал Чорбог',
+                    to: 'Худжанд',
+                    toAddress: 'Панчшанбе',
+                    departureTime: '2026-05-24T08:00:00',
+                    arrivalTime: '2026-05-24T12:30:00',
+                    duration: '4ч 30м',
+                    price: 140,
+                    description: 'Еду аккуратно, машина чистая, кондиционер работает. Выезжаем вовремя. Багажник свободный, есть место для сумок.',
                     driver: {
                         id: 1,
-                        firstName: 'Тимур',
-                        age: 28,
-                        rating: 5.0,
-                        reviewsCount: 1,
-                        phone: '+7 900 123 4567',
-                        whatsapp: '79001234567',
-                        telegram: 'termur',
+                        firstName: 'Фарход',
+                        age: 32,
+                        rating: 4.9,
+                        reviewsCount: 12,
+                        phone: '+992 90 123 4567',
+                        whatsapp: '992901234567',
+                        telegram: 'farhod_travel',
                         avatarUrl: null
                     },
-                    car: 'CHEVROLET MALIBU - Темно-серый',
+                    car: 'Toyota Camry (Белый)',
                     features: [
                         { icon: <CheckCircle size={18} />, text: 'Вы можете быстро связаться с водителем' },
-                        { icon: <Users size={18} />, text: 'Максимум двое сзади' }
+                        { icon: <Users size={18} />, text: 'Максимум два человека на заднем сиденье' }
                     ]
                 });
             } finally {
@@ -116,7 +116,6 @@ const RideDetailsPage = () => {
             setContacts(data);
         } catch (error) {
             console.error('Failed to fetch contacts:', error);
-            // Fallback for demo if API fails
             setContacts({
                 phone: ride.driver.phone || '+992900000000',
                 whatsapp: ride.driver.whatsapp || '992900000000',
@@ -167,13 +166,12 @@ const RideDetailsPage = () => {
             <h1 className="page-title">{t('ride.details')}</h1>
 
             <div className="details-layout">
-                {/* Left Column: Main Info */}
+                {/* Левая колонка: Основной контент */}
                 <div className="main-content-col">
 
-                    {/* Route Card */}
+                    {/* Карточка маршрута и описания */}
                     <div className="content-card route-card-detail">
                         <div className="timeline-grid">
-                            {/* Start Row */}
                             <div className="t-cell t-time start">
                                 <span>{formatTime(ride.departureTime)}</span>
                             </div>
@@ -183,9 +181,9 @@ const RideDetailsPage = () => {
                             </div>
                             <div className="t-cell t-info start">
                                 <div className="t-city">{ride.from}</div>
+                                {ride.fromAddress && <div className="t-address">{ride.fromAddress}</div>}
                             </div>
 
-                            {/* Duration Row */}
                             <div className="t-cell t-time duration">
                                 <span className="duration-text">{ride.duration}</span>
                             </div>
@@ -194,7 +192,6 @@ const RideDetailsPage = () => {
                             </div>
                             <div className="t-cell t-info middle"></div>
 
-                            {/* End Row */}
                             <div className="t-cell t-time end">
                                 <span>{formatTime(ride.arrivalTime)}</span>
                             </div>
@@ -203,11 +200,22 @@ const RideDetailsPage = () => {
                             </div>
                             <div className="t-cell t-info end">
                                 <div className="t-city">{ride.to}</div>
+                                {ride.toAddress && <div className="t-address">{ride.toAddress}</div>}
                             </div>
                         </div>
+
+                        {ride.description && (
+                            <div className="ride-description-block">
+                                <div className="description-header">
+                                    <FileText size={16} className="description-icon" />
+                                    <span>{language === 'ru' ? 'Комментарий водителя:' : 'Driver\'s comment:'}</span>
+                                </div>
+                                <p className="description-text-content">{ride.description}</p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Driver & Features Card */}
+                    {/* Карточка водителя */}
                     <div className="content-card driver-features-card">
                         <div className="driver-row hoverable-row" onClick={() => navigate('/profile/' + (ride.driver.id || '1'))}>
                             <div className="driver-main-info">
@@ -242,17 +250,16 @@ const RideDetailsPage = () => {
                         </div>
                     </div>
 
-                    {/* Rate Driver Button (Only visible if trip is past or user logic allows) */}
                     <div className="mt-4">
                         <Button variant="ghost" className="w-full" onClick={() => setShowRatingModal(true)}>
                             <Star size={18} className="mr-2" />
-                            Оценить водителя
+                            {t('ride.rateDriver')}
                         </Button>
                     </div>
 
                 </div>
 
-                {/* Right Column: Sidebar */}
+                {/* Правая колонка: Сайдбар */}
                 <div className="sidebar-col">
                     <div className="summary-card">
                         <h2 className="summary-date">{formatDateLong(ride.departureTime)}</h2>
@@ -278,17 +285,17 @@ const RideDetailsPage = () => {
                             <span className="total-price-lg">{ride.price.toLocaleString('ru-RU')} {language === 'ru' ? 'с' : 's'}</span>
                         </div>
 
-                        {/* Contacts Section */}
+                        {/* ФИКС: Кнопка "Связаться" теперь использует те же стили выравнивания, что и кнопки после клика */}
                         {!contacts ? (
-                            <Button size="lg" className="w-full mt-6 flex items-center justify-center gap-2 pill-button" onClick={handleShowContacts}>
-                                <Phone size={20} />
+                            <button className="contact-btn btn-phone full-width mt-6 initial-contact-btn" onClick={handleShowContacts}>
+                                <Phone size={18} />
                                 {t('ride.contact')}
-                            </Button>
+                            </button>
                         ) : (
                             <div className="contact-buttons-grid">
                                 <a href={`tel:${contacts.phone}`} className="contact-btn btn-phone full-width">
                                     <Phone size={18} />
-                                    Позвонить
+                                    {t('ride.call')}
                                 </a>
 
                                 {contacts.whatsapp && (
@@ -317,7 +324,7 @@ const RideDetailsPage = () => {
 
                                 <button className="contact-btn btn-chat full-width" onClick={handleStartChat}>
                                     <MessageCircle size={18} />
-                                    Написать в чат
+                                    {t('ride.writeChat')}
                                 </button>
                             </div>
                         )}
