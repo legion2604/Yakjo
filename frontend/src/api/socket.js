@@ -19,7 +19,7 @@ class WebSocketClient {
         // Production vs Dev URL
         const isProd = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         const wsUrl = isProd
-            ? `wss://api.yakjo.tj/api/ws/`
+            ? `wss://yakjo.app/api/ws/`
             : `${protocol}//${window.location.hostname}:8080/api/ws/`;
 
         console.log(`Using WS URL: ${wsUrl}`);
