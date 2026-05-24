@@ -12,6 +12,8 @@ import (
 	"log"
 	"strings"
 	"time"
+
+	goredis "github.com/redis/go-redis/v9"
 )
 
 type authService struct {
@@ -50,13 +52,11 @@ func (s *authService) SendOtp(ctx context.Context, phone model.PhoneRequest) err
 	}
 
 	otpSendAttempts, err := s.redis.GetOtpSendAttempts(ctx, phone.Phone)
-
 	if err != nil {
-		// Если это ошибка "ключа нет", мы её игнорируем и считаем попытки = 0
-		if err.Error() == "redis: nil" {
+		// Исправлено: проверяем на отсутствие ключа через errors.Is и алиас goredis.Nil
+		if errors.Is(err, goredis.Nil) {
 			otpSendAttempts = 0
 		} else {
-			// Если это ошибка сети или базы — возвращаем её
 			return err
 		}
 	}
@@ -86,7 +86,8 @@ func (s *authService) VerifyOtp(ctx context.Context, req model.VerifyOtp) (model
 
 	otpVerifyAttempts, err := s.redis.GetOtpVerifyAttempts(ctx, req.Phone)
 	if err != nil {
-		if err.Error() == "redis: nil" {
+		// Исправлено: проверяем на отсутствие ключа через errors.Is и алиас goredis.Nil
+		if errors.Is(err, goredis.Nil) {
 			otpVerifyAttempts = 0
 		} else {
 			return model.GetUserInfo{}, "", "", err
