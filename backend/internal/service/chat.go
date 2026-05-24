@@ -154,14 +154,15 @@ func (s *chatService) SaveMassage(data []byte, userId int, conn *websocket.Conn)
 	roomsMu.Lock()
 	defer roomsMu.Unlock()
 
-	if len(rooms[payload.ChatId]) <= 2 {
-		if rooms[payload.ChatId][0] == conn {
-			senderConn = rooms[payload.ChatId][1]
+	conns := rooms[payload.ChatId]
+	if len(conns) == 2 {
+		if conns[0] == conn {
+			senderConn = conns[1]
 		} else {
-			senderConn = rooms[payload.ChatId][0]
+			senderConn = conns[0]
 		}
 	}
-
+	// если len == 1 — второй юзер не в комнате, senderConn остаётся nil
 	return senderConn, jsonData, nil
 }
 
